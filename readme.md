@@ -6,7 +6,8 @@ KMS to SDN API for QKDN<!-- omit in toc -->
 - [3. Notes](#3-notes)
   - [3.1. Scope](#31-scope)
   - [3.2. Security](#32-security)
-  - [3.3. Related publications](#33-related-publications)
+  - [3.3. ETSI GS QKD 015 compatibility](#33-etsi-gs-qkd-015-compatibility)
+  - [3.4. Related publications](#34-related-publications)
 - [4. Acknowledgements](#4-acknowledgements)
 
 This repository hosts and maintains the API description developed by AIT for an interface between a Key Management System (KMS) and a Software Defined Network (SDN) Agent for Quantum Key Distribution Networks (QKDN).
@@ -48,7 +49,7 @@ Sequences and further information can be found in [`doc/readme.md`](doc/readme).
 
 # 3. Notes
 
-Some notes
+Some notes are given in this section.
 
 ## 3.1. Scope
 
@@ -58,7 +59,14 @@ This API's scope is limited to the interaction between the KMS and SDN Agent in 
 
 The SDN Agent and KMS are supposed to be deployed in the same security perimeter, also referred to as trusted node. Attacks on the API should therefore be prevented by the perimeter security mechanisms. However, as the technical implementation hurdles are very low, TLS 1.3 is required for this interface.
 
-## 3.3. Related publications
+## 3.3. ETSI GS QKD 015 compatibility
+
+Unfortunately some bugs in the ETSI GS QKD 015 v2.1.1. specification are not resolved yet. If strictly following ETSI GS QDK 015 some issues will arise:
+
+- ETSI GS QKD 015 v2.1.1. specifies that the SDN Controller first must be notified from both endpoints before a relay path is established. This may be possible with ETSI GS QKD 004, but is incompatible with ETSI GS QKD 014 (the more adopted specification). ETSI GS QKD 014 clearly already needs the final keys at `enc_keys` before the second node even knows of the `dec_keys` request. Therefore the path must be established at the first request at the source.
+- ETSI GS QKD 015 v2.1.1. does not publish the most important metric, which is the key availability (KAV) at the KMS layer. This API publishes it as `KAV` via the `link/performace/{link_id}` endpoint, but if required the SDN Controller can derive the ESKR: $ESKR = \dfrac{\Delta KAV}{\Delta t}$
+
+## 3.4. Related publications
 
 This repository complements research presented in the following publications:
 

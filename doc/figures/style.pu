@@ -1,0 +1,104 @@
+' Not-ugly plantuml style defaults
+
+skinparam defaultFontName  Helvetica
+skinparam sequenceMessageAlign center
+skinparam roundCorner 15
+
+skinparam activity {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+	BorderThickness 1
+}
+
+skinparam node {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam cloud {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam actor {
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam collections {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+	BorderThickness 1
+}
+
+skinparam usecase {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+	BorderThickness 1
+}
+
+skinparam class {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+	BorderThickness 1
+}
+
+
+skinparam object {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam package {
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam component {
+	BackgroundColor White
+	InterfaceBackgroundColor White
+	BorderColor Black
+	InterfaceBorderColor Black
+}
+
+skinparam note {
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam state {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam sequence {
+	ArrowColor Black
+	BackgroundColor White
+	ParticipantBackgroundColor White
+	BorderColor Black
+	LifeLineBorderColor Black
+	ParticipantBorderColor Black
+	BoxLineColor Black
+}
+
+skinparam interface {
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam map {
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam rectangle {
+    BackgroundColor white
+}

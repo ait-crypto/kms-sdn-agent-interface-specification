@@ -1,0 +1,62 @@
+@startuml
+!include ./style.pu
+autonumber
+
+skinparam dpi 300
+
+!pragma teoz true
+
+title: SDN close keystream
+
+participant "SDN Controller" as SDN_Controller
+
+box "Node A" #WhiteSmoke
+participant "SDN Agent A" as SDN_A
+participant "App A" as App_A
+participant "KMS A" as KMS_A
+end box
+box "Node B" #WhiteSmoke
+participant "SDN Agent B" as SDN_B
+participant "KMS B" as KMS_B
+end box
+
+box "Node C" #WhiteSmoke
+participant "SDN Agent C" as SDN_C
+participant "App C" as App_C
+participant "KMS C" as KMS_C
+end box
+
+== Normal operation ==
+
+App_A -> KMS_A: get_key
+&App_C -> KMS_C: get_key
+App_A <-- KMS_A: get_key (ACK)
+&App_C <-- KMS_C: get_key (ACK)
+
+== KS_close ==
+
+App_A -> KMS_A: close\n(KS_ID)
+KMS_A -> SDN_A: <back:greenyellow><color:black>""**link/{KS_ID}** (DELETE)""</color>
+activate SDN_Controller
+&SDN_A -> SDN_Controller : del app
+SDN_Controller <-> SDN_B : del app (KS_ID)
+&SDN_B <-> KMS_B: <back:greenyellow><color:black>""**link/relay/{KS_ID}** (DELETE)""
+
+SDN_Controller <-> SDN_C : del app infos(KS_ID)
+&SDN_C <-> KMS_C: <back:greenyellow><color:black>""**link/relay/{KS_ID}** (DELETE)""
+activate KMS_C
+note right
+TTL
+end note
+SDN_Controller --> SDN_A: del app (ACK)
+deactivate SDN_Controller
+
+&SDN_A --> KMS_A: <back:greenyellow><color:black>""**link/{KS_ID}** (ACK)""
+
+App_A <-- KMS_A: close (ACK)
+
+App_A <-> App_C: close
+App_C -> KMS_C: close\n(KS_ID)
+deactivate KMS_C
+KMS_C -> App_C: close (ACK)
+@enduml
