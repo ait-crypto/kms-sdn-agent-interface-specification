@@ -45,7 +45,7 @@ You can find the openAPI descriptions at:
 - [`openapi/kms_to_sdn_api.yaml`](openapi/kms_to_sdn_api.yaml) for the API, where the SDN Agent hosts the server and the KMS initiates client requests.
 - [`openapi/sdn_to_kms_api.yaml`](openapi/sdn_to_kms_api.yaml) for the API, where the KMS hosts the server and the SDN Agent initiates client requests.
 
-Sequences and further information can be found in [`doc/readme.md`](doc/readme).
+Sequences and further information can be found in [`doc/readme.md`](doc/).
 
 # 3. Notes
 
