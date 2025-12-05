@@ -69,7 +69,12 @@ This repository complements research presented in the following publications:
 
 # 4. Acknowledgements
 
-Different aspects of this work received funding from Digital Europe Program under project numbers 101091642 ("QCI-CAT"), 101091588 ("QUARTER"), and 101091564 ("eCausis"). Furthermore, from European Union’s Horizon Europe research and innovation program under Grant Agreement No.~101114043 ("QSNP"). Furthermore, by the Österreichische Forschungsförderungsgesellschaft mbH (FFG) research program "Breitband Austria 2030: GigaApp 2. Ausschreibung" under Project Number: FO999917949 ("Q-Crit Austria").
+Different aspects of this work were enabled by Co-funding:
 
-![EU co-funding logo](https://www.eacea.ec.europa.eu/sites/default/files/styles/embed_large_2x/public/2022-11/EN%20Co-Funded%20by%20the%20EU_POS.png?itok=_PbVvB_q)
-![FFG co-funding logo](https://www.ffg.at/sites/default/files/allgemeine_downloads/Logos_2018/FFG_Logo_EN_RGB_1500px.png)
+From Digital Europe Program under project numbers 101091642 ("QCI-CAT"), 101091588 ("QUARTER"), and 101091564 ("eCausis").
+From European Union’s Horizon Europe research and innovation program under Grant Agreement No.~101114043 ("QSNP").
+From the Österreichische Forschungsförderungsgesellschaft mbH (FFG) research program "Breitband Austria 2030: GigaApp 2. Ausschreibung" under Project Number: FO999917949 ("Q-Crit Austria").
+
+![EU co-funding logo](https://www.eacea.ec.europa.eu/sites/default/files/styles/embed_large_2x/public/2022-11/EN%20Co-Funded%20by%20the%20EU_POS.png)
+
+![FFG co-funding logo](doc/figures/FFG_Logo_EN_RGB_1500px.png)
