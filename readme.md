@@ -76,4 +76,4 @@ Furthermore, by the Österreichische Forschungsförderungsgesellschaft mbH (FFG)
 
 ![EU co-funding logo](https://www.eacea.ec.europa.eu/sites/default/files/styles/embed_large_2x/public/2022-11/EN%20Co-Funded%20by%20the%20EU_POS.png)
 
-![FFG co-funding logo](https://www.ffg.at/sites/default/files/allgemeine_downloads/Logos_2018/FFG_Logo_EN_RGB_1500px.png)
+![FFG co-funding logo](doc/figures/FFG_Logo_EN_RGB_1500px.png)
