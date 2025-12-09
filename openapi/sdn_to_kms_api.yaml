@@ -57,14 +57,18 @@ paths:
               schema:
                 type: object
                 properties:
+                  device_vendor:
+                    type: string
+                    example: 'AIT'
+                    description: Vendor of the KMS
                   device_model:
                     type: string
-                    example: 'AIT KMS AURORA'
-                    description: vendor and device
+                    example: 'AURORA KMS'
+                    description: Device brand name
                   device_version:
                     type: string
-                    example: 'v1.0.0'
-                    description: version
+                    example: '1.0.0'
+                    description: Version number in semantic versioning
         400:
           description: Bad request
           content:

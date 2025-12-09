@@ -44,6 +44,10 @@ paths:
                       type: string   
                       description: A group key is a key for more than one destination 
                       example: [http://172.0.10.103:5683,http://172.0.10.104:5683]
+              required:
+                - source
+                - destination
+                - qos_request
       responses:
         201:
           description: Successful registration
@@ -156,7 +160,7 @@ paths:
       tags:
         - Notification
       summary: KMS added to network
-      description: Inform the SDN of a new KMS that has been added to the network
+      description: Inform the SDN of a new KMS that has been added to the network. If local instance has information about connected QKD devices or links, specify in request body.
       requestBody:
         required: true
         content:
@@ -166,15 +170,38 @@ paths:
               properties:
                 kms_id:
                   type: string
+                device_model:
+                  type: object
+                  properties:
+                    device_vendor:
+                      type: string
+                      example: 'AIT'
+                      description: Vendor of the KMS
+                    device_model:
+                      type: string
+                      example: 'AURORA KMS'
+                      description: Device brand name
+                    device_version:
+                      type: string
+                      example: '1.0.0'
+                      description: version number in semantic versioning
                 device_ids:
                   type: array
                   example: [UUID1, UUID2]
                 link_ids:
                   type: array
                   example: [UUID1, UUID2]
+              required:
+                - kms_id
       responses:
         201:
-          description: Registration received
+          description: Registration received. Optionally additional config data provided in response. Config file data format or content not defined and expected to be vendor specific. 
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                example: {"config":Null}
         400:
           description: Bad request
           content:
