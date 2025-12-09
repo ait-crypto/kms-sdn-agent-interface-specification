@@ -6,8 +6,6 @@ Specification details<!-- omit in toc -->
   - [2.1. Link establishment](#21-link-establishment)
   - [2.2. Link update (ETSI 004 use-case)](#22-link-update-etsi-004-use-case)
   - [2.3. Key stream close (ETSI 004 use-case)](#23-key-stream-close-etsi-004-use-case)
-  - [Monitoring](#monitoring)
-
 
 # 1. Introduction
 
@@ -67,5 +65,3 @@ The key stream of the ETSI GS QKD 004 can be closed by applications. The error-f
 - The response to the original SDN notification is issued (msg 13) and the application is informed of the successful closing of the key stream. The application then can inform its peer app (msg 15), so it can also close the key stream (msg 16, 17)
 
 ![path update](figures/sequence_sdn_etsi004_close.png)
-
-## Monitoring

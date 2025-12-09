@@ -7,7 +7,8 @@ KMS to SDN API for QKDN<!-- omit in toc -->
   - [3.1. Scope](#31-scope)
   - [3.2. Security](#32-security)
   - [3.3. ETSI GS QKD 015 compatibility](#33-etsi-gs-qkd-015-compatibility)
-  - [3.4. Related publications](#34-related-publications)
+  - [3.4. Vendor specifics support](#34-vendor-specifics-support)
+  - [3.5. Related publications](#35-related-publications)
 - [4. Acknowledgements](#4-acknowledgements)
 
 This repository hosts and maintains the API description developed by AIT for an interface between a Key Management System (KMS) and a Software Defined Network (SDN) Agent for Quantum Key Distribution Networks (QKDN).
@@ -66,7 +67,16 @@ Unfortunately some bugs in the ETSI GS QKD 015 v2.1.1. specification are not res
 - ETSI GS QKD 015 v2.1.1. specifies that the SDN Controller first must be notified from both endpoints before a relay path is established. This may be possible with ETSI GS QKD 004, but is incompatible with ETSI GS QKD 014 (the more adopted specification). ETSI GS QKD 014 clearly already needs the final keys at `enc_keys` before the second node even knows of the `dec_keys` request. Therefore the path must be established at the first request at the source.
 - ETSI GS QKD 015 v2.1.1. does not publish the most important metric, which is the key availability (KAV) at the KMS layer. This API publishes it as `KAV` via the `link/performace/{link_id}` endpoint, but if required the SDN Controller can derive the ESKR: $ESKR = \dfrac{\Delta KAV}{\Delta t}$
 
-## 3.4. Related publications
+## 3.4. Vendor specifics support
+
+Some select data fields are supposed to be vendor specific. This is done deliberately to give KMS Vendors more freedom to innovate. It is expected that an SDN Controller can have vendor specific plugins which handle those vendor specifics.
+Such examples are:
+
+- Reported error codes and messages. It is not feasible for a specification to note all internal errors a KMS implementation can or wants to publish.
+- Zero touch provisioning config. Since each KMS has a unique feature set and may also not support remote configuration, the config file, which can be given as a response to the KMS registration message is not defined. As soon as a KMS registers to the SDN, a plugin in the Controller should generate the vendor specific configuration.
+
+
+## 3.5. Related publications
 
 This repository complements research presented in the following publications:
 
