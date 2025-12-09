@@ -4,16 +4,15 @@ info:
   description: Messages the SDN sends to the KMS
   version: '2.0.0'
 servers:
-  - url: http://kms_sdn_server/api/v2/sdn/
+  - url: http://kms_server/api/v2/sdn/
 tags:
-  - name: Capabilities
-  - name: Model 
-  - name: Link
+  - name: monitor
+  - name: link
 paths:
-  /capabilities:
+  /monitor/capabilities:
     get:
       tags:
-        - Capabilities
+        - monitor
       summary: Get the KMS's capabilities
       responses:
         200:
@@ -28,6 +27,11 @@ paths:
                     enum: [true, false]
                     example: true
                     description: true = key relay supported, false = it isn't
+                  app_if_support:
+                    type: string
+                    enum: ["etsi_004", "etsi_014", "kmip", "skip"]
+                    example: "etsi_014"
+                    description: specify supported interfaces. Above strings should be used. If additional interfaces are provided, state lower case snake case name.
         400:
           description: Bad request
           content:
@@ -40,10 +44,10 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/error-response'
-  /model:
+  /monitor/model:
     get:
       tags:
-        - Model
+        - monitor
       summary: Get the KMS's vendor, device and version
       responses:
         200:
@@ -59,7 +63,7 @@ paths:
                     description: vendor and device
                   device_version:
                     type: string
-                    example: 'v0.9.0'
+                    example: 'v1.0.0'
                     description: version
         400:
           description: Bad request
@@ -73,10 +77,72 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/error-response'
+
+  /monitor/status:
+    get:
+      tags:
+        - monitor
+      description: Get the status from the KMS
+      summary: Get the status from the KMS, it can be online or stopped.
+      responses:
+        "200":
+          description: description of the status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    enum: ["online", "stopped"]
+                    example: "online"
+                    description: If the KMS is able to answer, it can only answer online or stopped.
+                  response_code:
+                    type: integer
+                    minimum: 0
+                    maximum: 3
+                    example: 0
+                    description: This value corresponds also with the 'response_message'. It can be 0 = 'normal operation', 1 = warnings in log, 2 = errors in log, 3 = critical errors in log
+                  response_message:
+                    type: string
+                    enum: ["normal operation", "warnings", "errors", "critical"]
+                    example: "normal operation"
+                    description: This value corresponds also with the 'response_code'. It can be 0 = 'normal operation', 1 = warnings in log, 2 = errors in log, 3 = critical errors in log
+        "404":
+          description: KMS can't be reached, therefore has to be assumed offline.
+    put:
+      tags:
+        - monitor
+      description: Modify state of the KMS
+      summary: Modify state of the KMS, it can be online or stopped.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+                  enum: ["stopped", "offline"]
+                  example: "offline"
+      responses:
+        "200":
+          description: changing state successful
+        "500":
+          description: Internal error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/error-response'
+        "403":
+          description: This KMS does not allow remote status change
+
+
   /link/performance/{link_id}:
     get:
       tags:
-        - Link
+        - link
       summary: Get the KMS's performance data
       description: Get the performance data for the link with the given link id
       parameters:
@@ -177,7 +243,7 @@ paths:
   /link/relay/{key_stream_id}:
     post:
       tags:
-        - Link
+        - link
       summary: Create a link forwarding configuration record
       description: Create a link forwarding configuration record with the data in the request, using the given key_stream_id as an identifier
       parameters:
@@ -232,7 +298,7 @@ paths:
                 $ref: '#/components/schemas/error-response'
     put:
       tags:
-        - Link
+        - link
       summary: Update a link forwarding configuration record
       description: Replace a link forwarding configuration record with the data in the request, using the given key_stream_id as an identifier
       parameters:
@@ -293,7 +359,7 @@ paths:
                 $ref: '#/components/schemas/error-response'
     delete:
       tags:
-        - Link
+        - link
       summary: Delete a forwarding configuration record
       description: Delete the forwarding configuration record associated with the given key_stream_id
       parameters:
@@ -325,41 +391,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/error-response'
-  /link/{key_stream_id}:
-    delete:
-      tags:
-        - Link
-      summary: Close the link
-      description: Close the link associated with the given key_stream_id
-      parameters:
-        - name: key_stream_id
-          description: key stream's UUID
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        200:
-          description: Link closed
-        400:
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/error-response'
-        404:
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/error-response'
-        500:
-          description: Internal error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/error-response'
+
 components:
   schemas:
     error-response:
