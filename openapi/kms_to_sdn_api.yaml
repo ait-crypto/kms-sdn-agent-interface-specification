@@ -39,7 +39,19 @@ paths:
                     description: Version number in semantic versioning
                 required:
                   - version
-
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/error-response"
+        "500":
+          description: Internal error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/error-response"
+                
   /link/registration:
     post:
       tags:
