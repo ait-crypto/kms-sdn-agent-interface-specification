@@ -1,22 +1,54 @@
-openapi: '3.0.3'
+openapi: 3.1.2
 info:
-  title: SDN to KMS API
+  title: SDN Agent to KMS API
   description: Messages the SDN sends to the KMS
-  version: '2.0.0'
+  version: 2.0.0
+  contact:
+    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues
 servers:
-  - url: http://kms_server/api/v2/sdn/
+  - url: http://kms_server/api/v2/sdn
 tags:
   - name: monitor
   - name: link
+  - name: API
+
+security:
+  - https: []
+
 paths:
+  /version:
+    get:
+      summary: Get this API version
+      tags: 
+        - API
+      description: State this SDN API version number which is implemented and supported by the KMS
+      operationId: get_version
+      responses:
+        "200":
+          description: Provided API version
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: "2.0.0"
+                    pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$' # official regex for semantic versioning, see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+                    description: Version number in semantic versioning
+                required:
+                  - version
+
   /monitor/capabilities:
     get:
       tags:
         - monitor
-      summary: Get the KMS's capabilities
+      summary: Get KMS capabilities
+      description: Query which essential features are supported by this instance.
+      operationId: get_monitor_capabilities
       responses:
-        200:
-          description: The response states whether or not the KMS provides key relay support
+        "200":
+          description: The response states whether or not the KMS provides key relay support.
           content:
             application/json:
               schema:
@@ -27,63 +59,78 @@ paths:
                     enum: [true, false]
                     example: true
                     description: true = key relay supported, false = it isn't
-                  app_if_support:
+                  app_api_support:
                     type: string
                     enum: ["etsi_004", "etsi_014", "kmip", "skip"]
                     example: "etsi_014"
                     description: specify supported interfaces. Above strings should be used. If additional interfaces are provided, state lower case snake case name.
-        400:
+                required:
+                  - key_relay_support
+                  - app_api_support
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        500:
+                $ref: "#/components/schemas/error-response"
+        "500":
           description: Internal error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-  /monitor/model:
+                $ref: "#/components/schemas/error-response"
+  /monitor/device-info:
     get:
       tags:
         - monitor
-      summary: Get the KMS's vendor, device and version
+      summary: Get vendor, model and version
+      description: publish KMS instance vendor, model and version
+      operationId: get_monitor_model
       responses:
-        200:
+        "200":
           description: The response contains the vendor, device and version
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  device_model:
+                  vendor:
                     type: string
-                    example: 'AIT KMS AURORA'
-                    description: vendor and device
-                  device_version:
+                    example: "AIT"
+                    description: Vendor of the KMS
+                  model:
                     type: string
-                    example: 'v1.0.0'
-                    description: version
-        400:
+                    example: "AURORA KMS"
+                    description: Device brand name (model)
+                  version:
+                    type: string
+                    example: "1.0.0"
+                    pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$' # official regex for semantic versioning, see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+                    description: Version number in semantic versioning
+                required:
+                  - vendor
+                  - model
+                  - version
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        500:
+                $ref: "#/components/schemas/error-response"
+        "500":
           description: Internal error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
+                $ref: "#/components/schemas/error-response"
 
   /monitor/status:
     get:
       tags:
         - monitor
-      description: Get the status from the KMS
-      summary: Get the status from the KMS, it can be online or stopped.
+      summary: Get KMS status
+      description: Get the status from the KMS, it can be online or stopped.
+      operationId: get_monitor_status
       responses:
         "200":
           description: description of the status
@@ -96,25 +143,22 @@ paths:
                     type: string
                     enum: ["online", "stopped"]
                     example: "online"
-                    description: If the KMS is able to answer, it can only answer online or stopped.
-                  response_code:
-                    type: integer
-                    minimum: 0
-                    maximum: 3
-                    example: 0
-                    description: This value corresponds also with the 'response_message'. It can be 0 = 'normal operation', 1 = warnings in log, 2 = errors in log, 3 = critical errors in log
-                  response_message:
+                    description: If the KMS is able to answer, it can only answer online or stopped. If it can't answer it is assumed to be offline, see errors below. Stopped is a state, where the KMS is alive but not operational, which could for example be a maintenance state or similar.
+                  operation:
                     type: string
                     enum: ["normal operation", "warnings", "errors", "critical"]
                     example: "normal operation"
-                    description: This value corresponds also with the 'response_code'. It can be 0 = 'normal operation', 1 = warnings in log, 2 = errors in log, 3 = critical errors in log
+                    description: state if there are any operational issues. This may correlate to entries in the KMS log.
+                required:
+                  - state
         "404":
           description: KMS can't be reached, therefore has to be assumed offline.
     put:
       tags:
         - monitor
-      description: Modify state of the KMS
-      summary: Modify state of the KMS, it can be online or stopped.
+      summary: Modify state of the KMS
+      description: Modify state of the KMS, it can be online, stopped or offline.
+      operationId: put_monitor_status
       requestBody:
         required: true
         content:
@@ -124,42 +168,44 @@ paths:
               properties:
                 state:
                   type: string
-                  enum: ["stopped", "offline"]
+                  enum: ["stopped", "offline", "online"]
                   example: "offline"
+              required:
+                - state
       responses:
         "200":
           description: changing state successful
+        "403":
+          description: This KMS does not allow remote status change
         "500":
           description: Internal error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        "403":
-          description: This KMS does not allow remote status change
-
+                $ref: "#/components/schemas/error-response"
 
   /link/performance/{link_id}:
     get:
       tags:
         - link
-      summary: Get the KMS's performance data
-      description: Get the performance data for the link with the given link id
+      summary: Get performance data for link
+      description: Get the performance data for the link with the given link id. Query parameter for entries is optional.
+      operationId: get_link_performance
       parameters:
         - name: link_id
-          description: link's UUID 
+          description: link's UUID
           in: path
           required: true
           schema:
             type: string
             format: uuid
         - name: entries
-          description: Number of history records requested
+          description: Optional. Number of history records requested. If not specified maximal available history is returned. If 0, only current value is transmitted.
           in: query
           schema:
             type: integer
       responses:
-        200:
+        "200":
           description: The response contains KMS performance data
           content:
             application/json:
@@ -167,88 +213,54 @@ paths:
                 type: object
                 properties:
                   current:
-                    type: object
-                    properties:
-                      delta_t:
-                        description: Time period over which keys are counted for the rate calculation. The unit is seconds
-                        default: 10
-                        type: integer
-                        example: 10                        
-                      IKR:
-                        description: Internal Key Rate = the number of keys reserved for internal use during a delta_t period divided by delta_t
-                        type: integer
-                        example: 50                    
-                      EXKR:
-                        description: External Key Rate = the number of keys reserved for external use during a delta_t period divided by delta_t
-                        type: integer
-                        example: 50                    
-                      SKR:
-                        description: Secret Key Rate = the number of keys received from QKD devices during a delta_t period divided by delta_t
-                        type: integer
-                        example: 500
-                      KAV:
-                        description: Key Availability amount = the number of keys available to Applications during a delta_t period
-                        type: integer
-                        example: 400
+                    description: The latest data entry.
+                    $ref: "#/components/schemas/kms-performance-entry"
                   history:
-                    type: array
                     items:
-                      type: object
-                      properties:
-                        timestamp:
-                          type: string
-                          format: date-time
-                          description: ISO 8601 format
-                        delta_t:
-                          type: integer
-                        IKR:
-                          type: integer
-                        SKR:
-                          type: integer
-                        EXKR:
-                          type: integer
-                        KAV:
-                          type: integer
+                      $ref: "#/components/schemas/kms-performance-entry"
                     example:
                       - timestamp: "2024-08-27T17:41:28Z"
-                        delta_t: 10
+                        delta_t: 10000
                         IKR: 144
                         SKR: 1250
                         EXKR: 320
                         KAV: 1810
                       - timestamp: "2024-08-27T17:31:28Z"
-                        delta_t: 10
+                        delta_t: 10000
                         IKR: 144
                         SKR: 1250
                         EXKR: 320
                         KAV: 1024
-        400:
+                required:
+                  - current
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        404:
+                $ref: "#/components/schemas/error-response"
+        "404":
           description: Not found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        500:
+                $ref: "#/components/schemas/error-response"
+        "500":
           description: Internal error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
+                $ref: "#/components/schemas/error-response"
   /link/relay/{key_stream_id}:
     post:
       tags:
         - link
-      summary: Create a link forwarding configuration record
-      description: Create a link forwarding configuration record with the data in the request, using the given key_stream_id as an identifier
+      summary: Create link relay configuration
+      description: Create a link relay configuration record with the data in the request, using the given key_stream_id as an identifier
+      operationId: post_relay_config
       parameters:
         - name: key_stream_id
-          description: key_stream_id's UUID 
+          description: key_stream_id's UUID
           in: path
           required: true
           schema:
@@ -263,47 +275,60 @@ paths:
               properties:
                 source:
                   type: string
-                  description: Source APP's IP address or UUID 
-                  example: 'http://172.0.10.101:5683'
+                  description: Source APP's IP address or UUID
+                  example: "http://172.0.10.101:5683"
                 destination:
                   type: string
-                  description: Destination APP's IP address or UUID 
-                  example: 'http://172.0.10.102:5683'
+                  description: Destination APP's IP address or UUID
+                  example: "http://172.0.10.102:5683"
                 next_node_A:
                   type: array
                   description: List of adjacent nodes
-                  example: ['http://172.0.10.103:5683','http://172.0.10.103:5684']  
+                  items:
+                    type: string
+                    format: uri
+                  example:
+                    ["http://172.0.10.103:5683", "http://172.0.10.103:5684"]
                 next_node_B:
                   type: array
+                  items:
+                    type: string
+                    format: uri
                   description: List of adjacent nodes
-                  example: ['http://172.0.10.104:5683','http://172.0.10.104:5684'] 
+                  example:
+                    ["http://172.0.10.104:5683", "http://172.0.10.104:5684"]
                 qos_request:
-                  type: object
                   description: QoS requested by the KMS
-                  example: {"key_chunk_size":4,"max_bps":128,"min_bps":64,"jitter":1,"priority":3,"timeout":50,"ttl":5,"metadata_mimetype":"application/json"}
+                  $ref: "./kms_to_sdn_api.yaml#/components/schemas/qos-data"
+              required:
+                - source
+                - destination
+                - next_node_A
+                - next_node_B
       responses:
-        201:
-          description: A new forwarding configuration record has been created with the given key_stream_id as an identifier, from the data in the request
-        400:
+        "201":
+          description: A new relay configuration has been created with the given key_stream_id as an identifier, from the data in the request
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        500:
+                $ref: "#/components/schemas/error-response"
+        "500":
           description: Internal error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
+                $ref: "#/components/schemas/error-response"
     put:
       tags:
         - link
-      summary: Update a link forwarding configuration record
-      description: Replace a link forwarding configuration record with the data in the request, using the given key_stream_id as an identifier
+      summary: Update a link relay configuration
+      description: Replace a link relay configuration with the data in the request, using the given key_stream_id as an identifier
+      operationId: put_relay_config
       parameters:
         - name: key_stream_id
-          description: key_stream_id's UUID 
+          description: key_stream_id's UUID
           in: path
           required: true
           schema:
@@ -318,50 +343,69 @@ paths:
               properties:
                 source:
                   type: string
-                  description: Source APP's IP address or UUID 
-                  example: 'http://172.0.10.101:5683'
+                  description: Source APP's IP address or UUID
+                  example: "http://172.0.10.101:5683"
                 destination:
                   type: string
-                  description: Destination APP's IP address or UUID 
-                  example: 'http://172.0.10.102:5683'
+                  description: Destination APP's IP address or UUID
+                  example: "http://172.0.10.102:5683"
                 next_node_A:
                   type: array
                   description: List of adjacent nodes
-                  example: ['http://172.0.10.103:5683','http://172.0.10.103:5684']  
+                  items:
+                    type: string
+                    format: uri
+                  example:
+                    ["http://172.0.10.103:5683", "http://172.0.10.103:5684"]
                 next_node_B:
                   type: array
+                  items:
+                    type: string
+                    format: uri
                   description: List of adjacent nodes
-                  example: ['http://172.0.10.104:5683','http://172.0.10.104:5684'] 
+                  example:
+                    ["http://172.0.10.104:5683", "http://172.0.10.104:5684"]
                 qos_request:
                   type: object
                   description: QoS requested by the KMS
-                  example: {"key_chunk_size":4,"max_bps":128,"min_bps":64,"jitter":1,"priority":3,"timeout":50,"ttl":5,"metadata_mimetype":"application/json"}
+                  example:
+                    {
+                      "key_chunk_size": 4,
+                      "max_bps": 128,
+                      "min_bps": 64,
+                      "jitter": 1,
+                      "priority": 3,
+                      "timeout": 50,
+                      "ttl": 5,
+                      "metadata_mimetype": "application/json",
+                    }
       responses:
-        200:
-          description: The forwarding configuration record associated with the given key_stream_id has been replaced by the data in the request
-        400:
+        "200":
+          description: The relay configuration associated with the given key_stream_id has been replaced by the data in the request
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        404:
+                $ref: "#/components/schemas/error-response"
+        "404":
           description: Not found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        500:
+                $ref: "#/components/schemas/error-response"
+        "500":
           description: Internal error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
+                $ref: "#/components/schemas/error-response"
     delete:
       tags:
         - link
-      summary: Delete a forwarding configuration record
-      description: Delete the forwarding configuration record associated with the given key_stream_id
+      summary: Delete relay configuration
+      description: Delete the relay configuration associated with the given key_stream_id
+      operationId: delete_relay_config
       parameters:
         - name: key_stream_id
           description: key stream's UUID
@@ -371,45 +415,103 @@ paths:
             type: string
             format: uuid
       responses:
-        200:
+        "200":
           description: Forward table row deleted
-        400:
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        404:
+                $ref: "#/components/schemas/error-response"
+        "404":
           description: Not found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
-        500:
+                $ref: "#/components/schemas/error-response"
+        "500":
           description: Internal error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/error-response'
+                $ref: "#/components/schemas/error-response"
 
 components:
+
+  securitySchemes:
+    https:
+      type: mutualTLS
+      description: Connections must use TLS 1.3. The server enforces this at the transport layer.
+  
   schemas:
     error-response:
       type: object
       properties:
         type:
           type: string
-          description: 'Webpage with information on this problem'
+          description: "Webpage with information on this problem"
         title:
           type: string
-          description: 'Brief description of the problem'
+          description: "Brief description of the problem"
         status:
           type: integer
-          description: 'Response code or status code'
+          description: "Response code or status code"
         detail:
           type: string
-          description: 'Information on the problem and hints on how to solve it'
+          description: "Information on the problem and hints on how to solve it"
       required:
         - title
         - status
         - detail
+
+    kms-performance-entry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 format
+          example: "2024-08-27T17:41:28Z"
+        delta_t:
+          description: >
+            Time period over which keys are counted for the rate calculation.
+            The unit is milliseconds.
+          type: integer
+          format: int32
+          default: 10
+          example: 10000
+        IKR:
+          description: >
+            Internal Key Rate = amount of key material reserved for internal use
+            during a delta_t period divided by delta_t. Given in Byte/sec
+          type: integer
+          format: int32
+          example: 50
+        EXKR:
+          description: >
+            External Key Rate = amount of key material reserved for external use
+            during a delta_t period divided by delta_t. Given in Byte/sec
+          type: integer
+          format: int32
+          example: 50
+        SKR:
+          description: >
+            Secret Key Rate = amount of key material received from QKD devices
+            during a delta_t period divided by delta_t. Given in Byte/sec
+          type: integer
+          format: int32
+          example: 500
+        KAV:
+          description: >
+            Key Availability = amount of key material in Byte available to
+            Applications during a delta_t period
+          type: integer
+          format: int32
+          example: 400
+      required:
+        - timestamp
+        - delta_t
+        - IKR
+        - EXKR
+        - SKR
+        - KAV

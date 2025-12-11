@@ -1,0 +1,25 @@
+@startuml
+!include ./style.pu
+'autonumber
+
+skinparam dpi 300
+
+!pragma teoz true
+
+participant App
+participant KMS
+participant "SDN Agent"
+participant "SDN Controller"
+
+title: KMS to SDN Agent daedlock
+App -> KMS: enc_keys
+&"SDN Controller" -> "SDN Agent": status request
+activate KMS
+activate "SDN Agent"
+"KMS" ->(30) "SDN Agent": ""link/registration""\n
+&"SDN Agent" ->(30) "KMS": ""monitor/status""
+note right of KMS: expect response
+&note right of "SDN Agent": expect response
+"KMS" x<-->x "SDN Agent": ""Response""\n(not sent nor received)
+
+@enduml

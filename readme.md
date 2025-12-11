@@ -8,7 +8,10 @@ KMS to SDN API for QKDN<!-- omit in toc -->
   - [3.2. Security](#32-security)
   - [3.3. ETSI GS QKD 015 compatibility](#33-etsi-gs-qkd-015-compatibility)
   - [3.4. Vendor specifics support](#34-vendor-specifics-support)
-  - [3.5. Related publications](#35-related-publications)
+  - [3.5. Deadlock aware implementation](#35-deadlock-aware-implementation)
+    - [3.5.1. Multithread / async patterns](#351-multithread--async-patterns)
+    - [3.5.2. Timeout](#352-timeout)
+  - [3.6. Related publications](#36-related-publications)
 - [4. Acknowledgements](#4-acknowledgements)
 
 This repository hosts and maintains the API description developed by AIT for an interface between a Key Management System (KMS) and a Software Defined Network (SDN) Agent for Quantum Key Distribution Networks (QKDN).
@@ -39,7 +42,7 @@ An earlier version of this API was developed together with Universidad Politécn
 
 <img src="doc/figures/API_components.png" height="400">
 
-The API is implemented as a https REST API in a bidirectional setup, where the KMS and SDN Agent host a server and can act as a client to the other peer. Therefore, two APIs are described. The API further must support both, the ETSI 014 and ETSI 004 Application interface.
+The API is implemented as a https REST API in a bidirectional setup, where the KMS and SDN Agent host a server and can act as a client to the other peer. Therefore, two APIs are described. The API further considers both, the ETSI 014 and ETSI 004 application interface setups.
 
 You can find the openAPI descriptions at:
 
@@ -75,8 +78,26 @@ Such examples are:
 - Reported error codes and messages. It is not feasible for a specification to note all internal errors a KMS implementation can or wants to publish.
 - Zero touch provisioning config. Since each KMS has a unique feature set and may also not support remote configuration, the config file, which can be given as a response to the KMS registration message is not defined. As soon as a KMS registers to the SDN, a plugin in the Controller should generate the vendor specific configuration.
 
+## 3.5. Deadlock aware implementation
 
-## 3.5. Related publications
+As both communication partners, the KMS and SDN Agent, are a server and a client, it is important to implement those in a way to avoid deadlocks. The following figure outlines a deadlock situation, where at the same time the KMS is a client to the SDN Agent and vice versa.
+
+![deadlock_issue](./doc/figures/sequence_deadlock_example.png)
+
+This is an issue, which can usually be solved with different implementation techniques, some of which are outlined here, but to emphasize, this is beyond the API specification, but on the implementation of the KMS or SDN Agent, the following notes are meant as high level suggestions.
+
+### 3.5.1. Multithread / async patterns
+
+Implement the server and client in different threads This way the client can wait in its thread for the response, while the request at its server can be handled separately.
+
+### 3.5.2. Timeout
+
+Using different timeout behavior is a simple solution. Non-essential messages for which error handling can be easily implemented should have a lower timeout, so for example:
+
+![](doc/figures/sequence_deadlock_example_solve_timeout.png)
+
+
+## 3.6. Related publications
 
 This repository complements research presented in the following publications:
 
