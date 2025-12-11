@@ -5,13 +5,14 @@ KMS to SDN API for QKDN<!-- omit in toc -->
 - [2. Implementation specifics](#2-implementation-specifics)
 - [3. Notes](#3-notes)
   - [3.1. Scope](#31-scope)
-  - [3.2. Security](#32-security)
-  - [3.3. ETSI GS QKD 015 compatibility](#33-etsi-gs-qkd-015-compatibility)
-  - [3.4. Vendor specifics support](#34-vendor-specifics-support)
-  - [3.5. Deadlock aware implementation](#35-deadlock-aware-implementation)
-    - [3.5.1. Multithread / async patterns](#351-multithread--async-patterns)
-    - [3.5.2. Timeout](#352-timeout)
-  - [3.6. Related publications](#36-related-publications)
+  - [3.2. How to use OpenAPI specification format](#32-how-to-use-openapi-specification-format)
+  - [3.3. Security](#33-security)
+  - [3.4. ETSI GS QKD 015 compatibility](#34-etsi-gs-qkd-015-compatibility)
+  - [3.5. Vendor specifics support](#35-vendor-specifics-support)
+  - [3.6. Deadlock aware implementation](#36-deadlock-aware-implementation)
+    - [3.6.1. Multithread / async patterns](#361-multithread--async-patterns)
+    - [3.6.2. Timeout](#362-timeout)
+  - [3.7. Related publications](#37-related-publications)
 - [4. Acknowledgements](#4-acknowledgements)
 
 This repository hosts and maintains the API description developed by AIT for an interface between a Key Management System (KMS) and a Software Defined Network (SDN) Agent for Quantum Key Distribution Networks (QKDN).
@@ -49,7 +50,7 @@ You can find the openAPI descriptions at:
 - [`openapi/kms_to_sdn_api.yaml`](openapi/kms_to_sdn_api.yaml) for the API, where the SDN Agent hosts the server and the KMS initiates client requests.
 - [`openapi/sdn_to_kms_api.yaml`](openapi/sdn_to_kms_api.yaml) for the API, where the KMS hosts the server and the SDN Agent initiates client requests.
 
-Sequences and further information can be found in [`doc/readme.md`](doc/).
+Sequences and further information can be found in [`doc/readme.md`](doc/). Refer to the Note on [How to use OpenAPI specification format](#32-how-to-use-openapi-specification-format).
 
 # 3. Notes
 
@@ -59,18 +60,24 @@ Some notes are given in this section.
 
 This API's scope is limited to the interaction between the KMS and SDN Agent in the context of QKD Networks. Explicitly beyond scope are any details on the SDN Controller, QKD Layer, key establishment in QKD Networks or cryptographic aspects.
 
-## 3.2. Security
+## 3.2. How to use OpenAPI specification format
+
+[The OpenAPI initiative](https://www.openapis.org/) is a [Linux foundation project](https://www.linuxfoundation.org/projects) and "provides a formal standard for describing HTTP APIs". They publish documents on [how to use them](https://learn.openapis.org/). The API is described in a formal text based language, usually written in a yaml format, but others are also supported.
+
+There are different ways to visualize the yaml file in a user-friendly way, the authors of this repo have no affiliation with any of those services. As the original founders of the OpenAPI specification language, Swagger [provides a tool](https://swagger.io/tools/swagger-ui/) to visualize OpenAPI specifications. A popular way is to use a text editor and install an OpenAPI plugin, which can visualize the yaml in an interactive preview. This can be for example [VS Code](https://code.visualstudio.com/) as editor and [OpenAPI Preview](https://github.com/zoellner/openapi-preview), [OpenAPI (Swagger) Editor](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi) or [Redocly OpenAPI](https://github.com/Redocly/redocly-vs-code). Another option is importing the files to [postman](https://www.postman.com/).
+
+## 3.3. Security
 
 The SDN Agent and KMS are supposed to be deployed in the same security perimeter, also referred to as trusted node. Attacks on the API should therefore be prevented by the perimeter security mechanisms. However, as the technical implementation hurdles are very low, TLS 1.3 is required for this interface.
 
-## 3.3. ETSI GS QKD 015 compatibility
+## 3.4. ETSI GS QKD 015 compatibility
 
 Unfortunately some bugs in the ETSI GS QKD 015 v2.1.1. specification are not resolved yet. If strictly following ETSI GS QDK 015 some issues will arise:
 
 - ETSI GS QKD 015 v2.1.1. specifies that the SDN Controller first must be notified from both endpoints before a relay path is established. This may be possible with ETSI GS QKD 004, but is incompatible with ETSI GS QKD 014 (the more adopted specification). ETSI GS QKD 014 clearly already needs the final keys at `enc_keys` before the second node even knows of the `dec_keys` request. Therefore the path must be established at the first request at the source.
 - ETSI GS QKD 015 v2.1.1. does not publish the most important metric, which is the key availability (KAV) at the KMS layer. This API publishes it as `KAV` via the `link/performace/{link_id}` endpoint, but if required the SDN Controller can derive the ESKR: $ESKR = \dfrac{\Delta KAV}{\Delta t}$
 
-## 3.4. Vendor specifics support
+## 3.5. Vendor specifics support
 
 Some select data fields are supposed to be vendor specific. This is done deliberately to give KMS Vendors more freedom to innovate. It is expected that an SDN Controller can have vendor specific plugins which handle those vendor specifics.
 Such examples are:
@@ -78,7 +85,7 @@ Such examples are:
 - Reported error codes and messages. It is not feasible for a specification to note all internal errors a KMS implementation can or wants to publish.
 - Zero touch provisioning config. Since each KMS has a unique feature set and may also not support remote configuration, the config file, which can be given as a response to the KMS registration message is not defined. As soon as a KMS registers to the SDN, a plugin in the Controller should generate the vendor specific configuration.
 
-## 3.5. Deadlock aware implementation
+## 3.6. Deadlock aware implementation
 
 As both communication partners, the KMS and SDN Agent, are a server and a client, it is important to implement those in a way to avoid deadlocks. The following figure outlines a deadlock situation, where at the same time the KMS is a client to the SDN Agent and vice versa.
 
@@ -86,18 +93,17 @@ As both communication partners, the KMS and SDN Agent, are a server and a client
 
 This is an issue, which can usually be solved with different implementation techniques, some of which are outlined here, but to emphasize, this is beyond the API specification, but on the implementation of the KMS or SDN Agent, the following notes are meant as high level suggestions.
 
-### 3.5.1. Multithread / async patterns
+### 3.6.1. Multithread / async patterns
 
 Implement the server and client in different threads This way the client can wait in its thread for the response, while the request at its server can be handled separately.
 
-### 3.5.2. Timeout
+### 3.6.2. Timeout
 
 Using different timeout behavior is a simple solution. Non-essential messages for which error handling can be easily implemented should have a lower timeout, so for example:
 
 ![](doc/figures/sequence_deadlock_example_solve_timeout.png)
 
-
-## 3.6. Related publications
+## 3.7. Related publications
 
 This repository complements research presented in the following publications:
 
