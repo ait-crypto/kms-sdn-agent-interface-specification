@@ -301,7 +301,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "403":
-          description: This KMS does not allow remote status change
+          description: Forbidden, client does not have the required rights. 
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/error-response"
         "500":
           description: Internal error
           content:
