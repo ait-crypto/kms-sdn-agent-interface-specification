@@ -190,11 +190,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/error-response"
+          description: Not found, API endpoint not found.
         "500":
           description: Internal error
           content:
@@ -226,11 +222,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/error-response"
+          description: Not found, API endpoint not found.
         "500":
           description: Internal error
           content:
@@ -305,11 +297,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/error-response"
+          description: Not found, API endpoint not found
         "500":
           description: Internal error
           content:
@@ -350,11 +338,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/error-response"
+          description: Not found, API endpoint not found
         "500":
           description: Internal error
           content:
@@ -398,11 +382,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/error-response"
+          description: Not found, API endpoint not found.
         "500":
           description: Internal error
           content:
