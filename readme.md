@@ -22,7 +22,7 @@ This repository hosts and maintains the API description developed by AIT for an 
 
 ![SDN Managed QKDN](doc/figures/ETSI_015_SDN_Network.png)
 
-The figure above depicts a common way of deploying an SDN managed QKD Network according to ETSI GS QKD 015. The interfaces of such a network are marked as follows:
+The figure above depicts a common way of deploying an SDN-managed QKD Network according to ETSI GS QKD 015. The interfaces of such a network are marked as follows:
 
 a) KMS to Application Interface, typically ETSI GS QKD [014](https://www.etsi.org/deliver/etsi_gs/QKD/001_099/014/01.01.01_60/gs_qkd014v010101p.pdf) or [004](https://www.etsi.org/deliver/etsi_gs/QKD/001_099/004/02.01.01_60/gs_qkd004v020101p.pdf).
 
@@ -36,7 +36,7 @@ e) SDN Agent to SDN Controller Interface, typically ETSI GS QKD [015](https://ww
 
 q) Quantum channel, typically optical fiber.
 
-As it becomes apparent from this list, the KMS to SDN-Agent interface lacks clear specification by ETSI GS QKD or any other organization. Therefore, AIT developed a simple API with the goal of being simplistic enough to have a low barrier for adaption and provide a feature set, which satisfies the requirements of an SDN managed QKDN.
+As it becomes apparent from this list, the KMS to SDN-Agent interface lacks clear specification by ETSI GS QKD or any other organization. Therefore, AIT developed a simple API with a low barrier for adaption and a feature set which satisfies the requirements of a SDN-managed QKDN.
 
 An earlier version of this API was developed together with Universidad Politécnica de Madrid (UPM), Nextworks and Telefonica within the scope of the [DISCRETION project](https://discretion-eu.com/).
 
@@ -44,7 +44,7 @@ An earlier version of this API was developed together with Universidad Politécn
 
 <img src="doc/figures/API_components.png" height="400">
 
-The API is implemented as a https REST API in a bidirectional setup, where the KMS and SDN Agent host a server and can act as a client to the other peer. Therefore, two APIs are described. The API further considers both, the ETSI 014 and ETSI 004 application interface setups.
+The API is implemented as a https REST API in a bidirectional setup, where the KMS and SDN Agent host a server and can act as a client with the other peer. Therefore, two APIs are described. The API further considers both the ETSI 014 and ETSI 004 application interface setups.
 
 You can find the openAPI descriptions at:
 
@@ -83,16 +83,16 @@ Unfortunately some bugs in the ETSI GS QKD 015 v2.1.1. specification are not res
 Some select data fields are supposed to be vendor specific. This is done deliberately to give KMS Vendors more freedom to innovate. It is expected that an SDN Controller can have vendor specific plugins which handle those vendor specifics.
 Such examples are:
 
-- Reported error codes and messages. It is not feasible for a specification to note all internal errors a KMS implementation can or wants to publish.
-- Zero touch provisioning config. Since each KMS has a unique feature set and may also not support remote configuration, the config file, which can be given as a response to the KMS registration message is not defined. As soon as a KMS registers to the SDN, a plugin in the Controller should generate the vendor specific configuration.
+- Reported error codes and messages: it is not feasible for a specification to note all internal errors a KMS implementation can or wants to publish.
+- Zero-touch provisioning config: since each KMS has a unique feature set and may also not support remote configuration, the config file (which can be given as a response to the KMS registration message) is not defined. As soon as a KMS registers to the SDN, a plugin in the Controller should generate the vendor-specific configuration.
 
-## 3.6. Deadlock aware implementation
+## 3.6. Deadlock-aware implementation
 
 As both communication partners, the KMS and SDN Agent, are a server and a client, it is important to implement those in a way to avoid deadlocks. The following figure outlines a deadlock situation, where at the same time the KMS is a client to the SDN Agent and vice versa.
 
 ![deadlock_issue](./doc/figures/sequence_deadlock_example.png)
 
-This is an issue, which can usually be solved with different implementation techniques, some of which are outlined here, but to emphasize, this is beyond the API specification, but on the implementation of the KMS or SDN Agent, the following notes are meant as high level suggestions.
+This is an issue which can usually be solved with different implementation techniques, some of which are outlined here. But to emphasize, this is beyond the API specification, but on the implementation of the KMS or SDN Agent. The following notes are meant as high-level suggestions.
 
 ### 3.6.1. Multithread / async patterns
 
