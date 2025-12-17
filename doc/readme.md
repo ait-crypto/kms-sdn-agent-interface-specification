@@ -21,7 +21,7 @@ In the sequences, the bold and green highlighted messages are within the scope o
 
 As an application either opens a key stream via the ETSI GS QKD 004 `open_connect` or requests keys via ETSI GS QKD 014 `enc_keys`, the KMS first has to know via which path through the network the key(s) should be established. The error-free process works as follows and is displayed in a sequence diagram thereafter (error handling not described here):
 
-- The application starts the request at the source KMS `KMS A` (msg 1, 2)
+- The application starts the request at the source KMS (msg 1, 2)
 - The source KMS notifies its SDN Agent of the request (msg 3)
 - The SDN Agent in turn notifies the SDN Controller (msg 4), which computes the path (msg 5) and notifies all SDN Agents in the relay path (msg 6, 8).
 - The SDN Agents on the relay path configure the path with the next node infos to their corresponding KMS instances (msg 7, 9)
@@ -40,6 +40,9 @@ In case of the ETSI GS QKD 014, each request by the application results in a new
 **Note 3:**
 The KMS should request from the SDN paths which can also support any internal key consumption.
 
+**Note 4:**
+All communication beyond scope is only exemplary, specifically the communication between the SDN Controller and SDN Agent (messages 4, 6, 8, 10, 16, 25) is out of scope.
+
 ## 2.2. Link update (ETSI 004 use-case)
 
 Since the ETSI GS QKD 004 is stateful, it can maintain its path. But high key consumption on a link or an unexpected event (e.g. QKD node unreachable) requires an update of the established path. The error-free process works as follows and is displayed in a sequence diagram thereafter (error handling not described here):
@@ -54,6 +57,9 @@ This update works seamlessly without the application layer noticing, since norma
 **Note 1:**
 
 This message can also be used to tear down a link entirely by sending a `DELETE` to `/link/relay/{key_stream_id}` to every node, for example in case of a key stream close initiated by the SDN Controller.
+
+**Note 2:**
+All communication beyond scope is only exemplary, specifically the communication between the SDN Controller and SDN Agent (messages 6, 8, 10, 12) is out of scope.
 
 ## 2.3. Key stream close (ETSI 004 use-case)
 
