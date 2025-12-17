@@ -63,6 +63,8 @@ KMS_A <-> KMS_C: relay_keys
 KMS_D -> KMS_D: save
 end group
 
+== Normal operation ==
+
 App_A -> KMS_A: get_key
 &App_D -> KMS_D: get_key
 
