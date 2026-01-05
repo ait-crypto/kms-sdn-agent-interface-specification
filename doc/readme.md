@@ -84,7 +84,7 @@ The following section contains some clarifications and additional visualizations
 
 ## 3.1. next_node_info
 
-`POST` and `PUT` of SDN to KMS API `/link/relay/{key_stream_id}`, as well as the response of the KMS to SDN API `POST` `/link/registration` contain the data field `next_node_info` for which some notes are given here:
+`POST` and `PUT` of SDN to KMS API `/link/relay/{key_stream_id}`, as well as the response of the KMS to SDN API `POST` `/link/registration`, contain the data field `next_node_info` for which some notes are given here:
 
 ### 3.1.1. Note 1, URI authority type
 
@@ -97,19 +97,19 @@ The following is from [`RFC3986`](https://datatracker.ietf.org/doc/html/rfc3986)
 scheme   **authority**     path        query   fragment
 ```
 
-This can be a plain IP address (v4/v6 or others) with a port or a domain name, for which a Domain Name System (DNS) ([`RFC 1035`](https://datatracker.ietf.org/doc/html/rfc1035)) is set up, either via a DNS Server or locally resolved names. A DNS has the advantage, that the IP layout is obfuscated and the IPs can be changed if needed. On the other hand, a DNS requires additional configuration effort.
+This can be a plain IP address (v4/v6 or others) with a port or a domain name, for which a Domain Name System (DNS) ([`RFC 1035`](https://datatracker.ietf.org/doc/html/rfc1035)) is set up, either via a DNS Server or locally resolved names. With a DNS layer the IP layout is conveniently obfuscated, also allowing the IPs to change without the need to change the associated URIs. On the other hand, a DNS layer requires additional configuration effort.
 
 ### 3.1.2. Note 2, list type
 
-The node entries are a list type, this is because it should enable bidirectional relay and multi-path / group keys. Each instance receives all KMS related to that relay, as shown in the following figure.
+The node entries are a list type, because it bi-directional and multi-path forwarding should be supported. Each KMS instance receives all the neighbouring relaying nodes' URIs, as shown in the following figure:
 
 ![relay_config_visualization](./figures/relay_config_visualization.png)
 
 The following explanation assumes **hop-by-hop relay** (figure 5 and 6 of [Rec. ITU-T Y.3803](https://www.itu.int/rec/T-REC-Y.3803/_page.print)), but the other schemes work as well as outlined later:
 
 - **For KMS 1:** it knows it's the source (as it is the source of the App query), so it generates the combination of RNG key with specified KMS 2 (may be skipped if final key is not random sourced).
-- **For KMS 2:** if a relay request was sent from KMS 1, it has to forward the request to all peers in the list that are not the sender of the request, so only to KMS 3. In case KMS 3 sent the request, the same logic applies and it si relayed to KMS 1.
-- **For KMS 3:** if a relay request was sent from KMS 2, it has to forward the request to all peers in the list that are not the sender of the request, so to KMS 4 and 5. In case KMS 4 sent it, the same logic applies and it is relayed to KMS 2 and 5.
+- **For KMS 2:** if a relay request was sent from KMS 1, it has to forward the request to all peers in the list that are not the sender of the request, so only to KMS 3. In case KMS 3 sent the request, the same logic applies: it is relayed to KMS 1.
+- **For KMS 3:** if a relay request was sent from KMS 2, it has to forward the request to all peers in the list that are not the sender of the request, so to KMS 4 and 5. In case KMS 4 sent it, the same logic applies: it is relayed to KMS 2 and 5.
 
 
 In case of the **centralized key relay** (figure 8 of [Rec. ITU-T Y.3803](https://www.itu.int/rec/T-REC-Y.3803/_page.print)):
