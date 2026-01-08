@@ -68,12 +68,15 @@ paths:
               properties:
                 source:
                   type: string
-                  description: IP address or UUID of the source APP
-                  example: "http://172.0.10.101:5683"
+                  description: URI or UUID of the source APP
+                  example: "172.0.10.101:5683"
                 destination:
-                  type: string
-                  description: IP address or UUID of the destination APP
-                  example: "http://172.0.10.102:5683"
+                  type: array
+                  items: 
+                    type: string
+                    description: URI or UUID of the destination APP, multiple in case of group key.
+                    minItems: 1
+                    example: "172.0.10.102:5683"
                 qos_request:
                   description: QoS requested by the KMS, either it is an etsi_004 or etsi_014 request.
                   $ref: "#/components/schemas/qos-data"
@@ -91,19 +94,12 @@ paths:
                         $ref: "./sdn_to_kms_api.yaml#/components/schemas/kms-performance-entry"
                 options:
                   type: object
-                  description: Optional additional fields. "multipath" and "group_key" are defined. In case additional optional features are available, create new "key:value" pair in object.
+                  description: Optional additional fields. "multipath" are defined. In case additional optional features are available, create new "key:value" pair in object.
                   properties:
                     multipath:
                       type: boolean
                       description: In case of a multi-path establishment, specify 'true'.
                       example: true
-                    group_key:
-                      type: array
-                      description: A group key is a key for more than one destination. Specify additional SAE UUIDs
-                      minItems: 1
-                      items:
-                        type: string
-                        format: uuid
               required:
                 - source
                 - destination
@@ -120,16 +116,15 @@ paths:
                   key_stream_id:
                     type: string
                     format: uuid
-                  next_node_B:
+                  next_node_info:
                     type: array
                     minItems: 1
-                    description: The IP addresses of peer nodes. Usually only one entry in list, for multi path or additional SAE IDs can be multiple entries
+                    description: The URI authority of peer nodes. Usually only one entry in list, for multi path or additional SAE IDs can be multiple entries.
                     example:
-                      ["https://172.0.10.103:5683", "https://172.0.10.104:5683"]
+                      ["172.0.10.103:5683", "172.0.10.104:5683"]
                     items:
                       type: string
                       description: At least one element.
-                      format: uri
                   qos:
                     type: object
                     description: QoS counter proposal set by the SDN, only ETSI 004
@@ -143,7 +138,7 @@ paths:
                       }
                 required:
                   - key_stream_id
-                  - next_node_B
+                  - next_node_info
 
         "400":
           description: Bad request
