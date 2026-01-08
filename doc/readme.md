@@ -6,10 +6,15 @@ Specification details<!-- omit in toc -->
   - [2.1. Link establishment](#21-link-establishment)
   - [2.2. Link update (ETSI 004 use-case)](#22-link-update-etsi-004-use-case)
   - [2.3. Key stream close (ETSI 004 use-case)](#23-key-stream-close-etsi-004-use-case)
+- [3. Notes](#3-notes)
+  - [3.1. next\_node\_info](#31-next_node_info)
+    - [3.1.1. Note 1, URI authority type](#311-note-1-uri-authority-type)
+    - [3.1.2. Note 2, list type](#312-note-2-list-type)
+    - [3.1.3. Note 3: Entry order](#313-note-3-entry-order)
 
 # 1. Introduction
 
-This document gives some additional details beyond the high level picture outlined in the top level [`readme.md`](../readme.md)
+This document gives some additional details beyond the high level picture outlined in the top level [`readme.md`](../readme.md). It further expands on nuances too verbose to fit the OpenAPI description text.
 
 # 2. Sequences
 
@@ -68,7 +73,63 @@ The key stream of the ETSI GS QKD 004 can be closed by applications. The error-f
 - After normal operation (msg 1-4), the application can close a session with the `close` message (msg 5).
 - In this case the KMS notifies the SDN Agent (msg 6) of this event.
 - In turn the Controller notifies all other SDN Agents (msg 8, 10)
-- The SDN Agents notify the KMS (msg 9, 11), which delete their forwarding info and other relevant data associated with the key stream. The destination KMS must keep any keys for the negotiated TTL, for which this is the starting time (or until a close is issued (msg 16)).
+- The SDN Agents notify the KMS (msg 9, 11), which delete their relay info and other relevant data associated with the key stream. The destination KMS must keep any keys for the negotiated TTL, for which this is the starting time (or until a close is issued (msg 16)).
 - The response to the original SDN notification is issued (msg 13) and the application is informed of the successful closing of the key stream. The application then can inform its peer app (msg 15), so it can also close the key stream (msg 16, 17)
 
 ![path update](figures/sequence_sdn_etsi004_close.png)
+
+# 3. Notes
+
+The following section contains some clarifications and additional visualizations for specific messages.
+
+## 3.1. next_node_info
+
+`POST` and `PUT` of SDN to KMS API `/link/relay/{key_stream_id}`, as well as the response of the KMS to SDN API `POST` `/link/registration`, contain the data field `next_node_info` for which some notes are given here:
+
+### 3.1.1. Note 1, URI authority type
+
+The KMS should be able to use the [URI authority](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2) (as per RFC 3986) to reach the endpoint of the peer KMS, but only the authority is given, the path, scheme and other components should be known to each KMS implementation.
+The following is from [`RFC3986`](https://datatracker.ietf.org/doc/html/rfc3986), only slightly reformatted (authority highlighted with `**`):
+
+```text
+  foo://example.com:8042/over/there?name=ferret#nose
+  └┬┘   ┗━━━━━━┳━━━━━━━┛└───┬─────┘ └────┬────┘ └─┬┘
+scheme   **authority**     path        query   fragment
+```
+
+This can be a plain IP address (v4/v6 or others) with a port or a domain name, for which a Domain Name System (DNS) ([`RFC 1035`](https://datatracker.ietf.org/doc/html/rfc1035)) is set up, either via a DNS Server or locally resolved names. With a DNS layer the IP layout is conveniently obfuscated, also allowing the IPs to change without the need to change the associated URIs. On the other hand, a DNS layer requires additional configuration effort.
+
+### 3.1.2. Note 2, list type
+
+The node entries are a list type, because it bi-directional and multi-path forwarding should be supported. Each KMS instance receives all the neighbouring relaying nodes' URIs, as shown in the following figure:
+
+![relay_config_visualization](./figures/relay_config_visualization.png)
+
+The following explanation assumes **hop-by-hop relay** (figure 5 and 6 of [Rec. ITU-T Y.3803](https://www.itu.int/rec/T-REC-Y.3803/_page.print)), but the other schemes work as well as outlined later:
+
+- **For KMS 1:** it knows it's the source (as it is the source of the App query), so it generates the combination of RNG key with specified KMS 2 (may be skipped if final key is not random sourced).
+- **For KMS 2:** if a relay request was sent from KMS 1, it has to forward the request to all peers in the list that are not the sender of the request, so only to KMS 3. In case KMS 3 sent the request, the same logic applies: it is relayed to KMS 1.
+- **For KMS 3:** if a relay request was sent from KMS 2, it has to forward the request to all peers in the list that are not the sender of the request, so to KMS 4 and 5. In case KMS 4 sent it, the same logic applies: it is relayed to KMS 2 and 5.
+
+
+In case of the **centralized key relay** (figure 8 of [Rec. ITU-T Y.3803](https://www.itu.int/rec/T-REC-Y.3803/_page.print)):
+
+- **For KMS 1:** it knows it's the source (as it is the source of the App query), so it generates the combination of RNG key with specified KMS 2 to the central KMS (may be skipped if final key is not random sourced).
+- **For KMS 2:** it combines the specified kms keys associated with the peers in the list and sends them to the central KMS
+- **For KMS 3:** it combines each entry in the list with the first entry and sends them to the central KMS.
+- **For KMS 4 and 5:** as they are not the source of this request, they know to expect the message from the centralized KMS (beyond scope of this specification) and use keys with the previous to decrypt.
+
+In the case of the **destination relay** (figure 7 of [Rec. ITU-T Y.3803](https://www.itu.int/rec/T-REC-Y.3803/_page.print)), [which also works using RNG at Node A]:
+
+- **For KMS 1:** it knows it's the source (as it is the source of the App query), so it generates the combination of RNG key with specified KMS 2 to the central KMS (may be skipped if final key is not random sourced).
+- **For KMS 2:** it combines the specified kms keys associated with the peers in the list and sends them to the destination (destination is a field in the `/link/relay` data).
+- **For KMS 3:** it combines the first and second key and sends it to the first destination and the first and third key and sends it to the second destination.
+- **For KMS 4 and 5:** as they are not the source of this request, they know to expect the message from the previous KMS.
+
+### 3.1.3. Note 3: Entry order
+
+For the "hop-by-hop" relay, the order of the specified URIs does not matter. For other schemes outlined in [Rec. ITU-T Y.3803](https://www.itu.int/rec/T-REC-Y.3803/_page.print) it matters for the group key and multi path use-case.
+For example in the setup depicted above, if the "destination relay" method is used, KMS 3 must combine keys shared with KMS 2 (referenced by `kms-2.net`) with keys for KMS 4 and send the product to 4, correspondingly KMS 2 keys with KMS 5 keys to send to KMS 5. It is not useful to combine KMS 4 keys with KMS 5 keys and send them to KMS 2.
+Therefore, in case of more than two elements, the first entry is designated as the primary one, with whom the others are to be combined.
+
+The destination array for multi path must correspond accordingly for the "destination relay" method.
