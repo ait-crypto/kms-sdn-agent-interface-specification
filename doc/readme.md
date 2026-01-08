@@ -128,7 +128,8 @@ In the case of the **destination relay** (figure 7 of [Rec. ITU-T Y.3803](https:
 
 ### 3.1.3. Note 3: Entry order
 
-For the "hop-by-hop" relay, the order of the specified URIs does not matter. For other schemes it matters for the group key and multi path use-case.
+For the "hop-by-hop" relay, the order of the specified URIs does not matter. For other schemes outlined in [Rec. ITU-T Y.3803](https://www.itu.int/rec/T-REC-Y.3803/_page.print) it matters for the group key and multi path use-case.
+For example in the setup depicted above, if the "destination relay" method is used, KMS 3 must combine keys shared with KMS 2 (referenced by `kms-2.net`) with keys for KMS 4 and send the product to 4, correspondingly KMS 2 keys with KMS 5 keys to send to KMS 5. It is not useful to combine KMS 4 keys with KMS 5 keys and send them to KMS 2.
 Therefore, in case of more than two elements, the first entry is designated as the primary one, with whom the others are to be combined.
 
 The destination array for multi path must correspond accordingly for the "destination relay" method.
