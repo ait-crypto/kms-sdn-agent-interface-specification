@@ -1,0 +1,74 @@
+@startuml
+!include  ./style.pu
+autonumber
+
+skinparam dpi 300
+
+!pragma teoz true
+
+title: SDN path update ETSI GS QKD 004
+
+participant "SDN Controller" as SDN_Controller
+
+box "Node A" #WhiteSmoke
+participant "SDN Agent A" as SDN_A
+participant "App A" as App_A
+participant "KMS A" as KMS_A
+end box
+
+box "Node B" #WhiteSmoke
+participant "SDN Agent B" as SDN_B
+participant "KMS B" as KMS_B
+end box
+
+box "Node C" #WhiteSmoke
+participant "SDN Agent C" as SDN_C
+participant "KMS C" as KMS_C
+end box
+
+box "Node D" #WhiteSmoke
+participant "SDN Agent D" as SDN_D
+participant "App D" as App_D
+participant "KMS D" as KMS_D
+end box
+
+== Normal operation ==
+
+App_A -> KMS_A: get_key
+&App_D -> KMS_D: get_key
+
+App_A <-- KMS_A: get_key (ACK)
+&App_D <-- KMS_D: get_key (ACK)
+
+== Update path ==
+
+-> SDN_Controller: Event\n(e.g. balancing)
+SDN_Controller -> SDN_A: new path
+&SDN_A -> KMS_A: <back:greenyellow><color:black>""**link/relay** (PUT)""\n(QoS, KS_ID, Next Nodes)
+
+SDN_Controller -> SDN_B: new path
+&SDN_B -> KMS_B: <back:greenyellow><color:black>""**link/relay** (DELETE)""\n(KS_ID)
+
+SDN_Controller -> SDN_C: new path
+&SDN_C -> KMS_C: <back:greenyellow><color:black>""**link/relay** (POST)""\n(QoS, KS_ID, Next Nodes)
+
+SDN_Controller -> SDN_D: new path
+&SDN_D -> KMS_D: <back:greenyellow><color:black>""**link/relay** (PUT)""\n(QoS, KS_ID, Next Nodes)
+
+== New relay path ==
+
+group Key Forwarding (only rough outline)
+KMS_A <-> KMS_C: relay_keys
+&KMS_C <-> KMS_D: relay_keys
+KMS_D -> KMS_D: save
+end group
+
+== Normal operation ==
+
+App_A -> KMS_A: get_key
+&App_D -> KMS_D: get_key
+
+App_A <-- KMS_A: get_key (ACK)
+&App_D <-- KMS_D: get_key (ACK)
+
+@enduml

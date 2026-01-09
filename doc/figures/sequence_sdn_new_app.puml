@@ -1,0 +1,82 @@
+@startuml
+!include ./style.pu
+autonumber
+
+skinparam dpi 300
+
+!pragma teoz true
+
+title: SDN relay path establishment
+
+participant "SDN Controller" as SDN_Controller
+
+box "Node A" #WhiteSmoke
+participant "SDN Agent A" as SDN_A
+participant "App A" as App_A
+participant "KMS A" as KMS_A
+end box
+box "Node B" #WhiteSmoke
+participant "SDN Agent B" as SDN_B
+participant "KMS B" as KMS_B
+end box
+
+box "Node C" #WhiteSmoke
+participant "SDN Agent C" as SDN_C
+participant "App C" as App_C
+participant "KMS C" as KMS_C
+end box
+
+== Application request ==
+
+alt ETSI 014
+App_A -> KMS_A: enc_keys\n(M/S SAEs, QoS)
+else ETSI 004
+App_A -> KMS_A: open_connect\n(src, dst, QoS)
+end
+
+== SDN Link establishment ==
+
+KMS_A -> SDN_A: <back:greenyellow><color:black>""**link/registration** (POST)""</color>\n(src/SAE, dst/SAE, QoS)
+activate SDN_Controller
+&SDN_A -> SDN_Controller : new app
+SDN_Controller -> SDN_Controller : Select\npath
+SDN_Controller <-> SDN_B : new app infos\n(App ID, path...)
+&SDN_B <-> KMS_B: <back:greenyellow><color:black>""**link/relay/{KS_ID}** (POST)""\n(QoS, KS_ID, Next Nodes)
+
+SDN_Controller <-> SDN_C : new app infos\n(App ID, path...)
+&SDN_C <-> KMS_C: <back:greenyellow><color:black>""**link/relay/{KS_ID}** (POST)""\n(QoS, KS_ID, Next Nodes)
+
+SDN_Controller --> SDN_A: new app (ACK)
+deactivate SDN_Controller
+
+&SDN_A --> KMS_A: <back:greenyellow><color:black>""**link/registration** (ACK)""\n(QoS, **KS_ID**, Next Nodes)
+
+== Application response ==
+
+group ETSI 004
+KMS_A --> App_A: open_connect\nACK (**KS_ID**)
+App_A -> App_C: send KS_ID to open connection
+App_C -> KMS_C: open_connect\n(src, dst, **KS_ID**)
+KMS_C <-> SDN_C: <back:greenyellow><color:black>""**link/registration**(PATCH)""\n(dst, KS_ID)
+&SDN_C <-> SDN_Controller: new app
+KMS_C --> App_C: open_connect\nACK
+end
+
+group Key Forwarding (only rough outline)
+KMS_A <-> KMS_B: relay_keys
+&KMS_B <-> KMS_C: relay_keys
+KMS_C -> KMS_C: save
+end group
+
+group ETSI 014
+KMS_A --> App_A: enc_keys\nACK (keys, key_ids)
+App_A -> App_C: send Key_IDs to peer SAE
+App_C -> KMS_C: dec_keys\n(M/S SAEs, key_ids)
+KMS_C <-> SDN_C: <back:greenyellow><color:black>""**link/registration**(PATCH)""\n(dst, KS_ID)
+&SDN_C <-> SDN_Controller: new app
+KMS_C -> App_C: dec_keys\nACK
+end 
+
+== Normal operation ==
+
+@enduml

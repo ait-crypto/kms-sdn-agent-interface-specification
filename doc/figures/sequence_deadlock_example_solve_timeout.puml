@@ -1,0 +1,32 @@
+@startuml
+!include ./style.pu
+'autonumber
+
+skinparam dpi 300
+
+!pragma teoz true
+
+participant App
+participant KMS
+participant "SDN Agent" as SDNA
+participant "SDN Controller" as SDNC
+
+title: KMS to SDN Agent daedlock
+App -> KMS: enc_keys
+&SDNC -> SDNA: status request
+activate KMS
+{start_sdna_t} SDNA ->(30) "KMS": ""monitor/status""
+&{start_kms_t} "KMS" ->(30) SDNA: ""link/registration""\n
+{end_sdna_t} SDNA -> SDNC : error response:\nTimeout
+deactivate SDNA
+
+{start_sdna_t} <-> {end_sdna_t}: Δt > T(sdn)
+SDNA -> SDNC: ""link/registration""
+... \t\t\t\t\t\trelay path establishment etc. ...
+SDNC --> SDNA: ACK
+{end_kms_t} SDNA --> KMS : \t\tACK
+{start_kms_t} <-> {end_kms_t} : Δt < T(kms)
+KMS --> App: ACK
+deactivate KMS
+
+@enduml
