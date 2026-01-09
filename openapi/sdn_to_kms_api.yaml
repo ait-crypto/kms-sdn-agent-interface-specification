@@ -383,13 +383,6 @@ paths:
       responses:
         "200":
           description: QKD device updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  qkd_device:
-                    $ref: "#/components/schemas/qkd-device-info"
         "400":
           description: Invalid input (missing device_id or malformed update object)
           content:
@@ -408,7 +401,7 @@ paths:
       tags:
         - control
       summary: Delete QKD device
-      description: remove connected QKD device, KMS will no longer try to obtain keys from it.
+      description: Remove connected QKD device, KMS will no longer try to obtain keys from it.
       operationId: delete_control_qkd_device
       parameters:
         - in: path
