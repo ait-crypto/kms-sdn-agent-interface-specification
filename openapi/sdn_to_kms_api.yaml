@@ -2,7 +2,7 @@ openapi: 3.1.2
 info:
   title: SDN Agent to KMS API
   description: Messages the SDN sends to the KMS
-  version: 2.0.0
+  version: 2.1.0
   contact:
     url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues
 servers:
@@ -83,6 +83,53 @@ paths:
                       enum: ["etsi_004", "etsi_014", "kmip", "skip"]
                       example: "etsi_014"
                       description: specify supported interfaces. The enum defined strings should be used. If additional interfaces are provided, state lower case snake case name.
+                  etsi_014_info:
+                    type: object
+                    properties:
+                      KME_ID: 
+                        type: string
+                        description: This KMS instance ID
+                      key_size:
+                        type: integer
+                        minimum: 0
+                        description: Number in bit stating the default key size of this KMS, all other parameters use this for calculations.
+                      stored_key_count:
+                        type: integer
+                        minimum: 0
+                        description: Number of stored keys which are available and could be delivered to the application. Number of keys is based on number of entries of the default key size.
+                      max_key_count:
+                        type: integer
+                        minimum: 0
+                        description: Number stating this KMS instance maximum key store. This assumes above default key size.
+                      max_key_per_request:
+                        type: integer
+                        minimum: 0
+                        description: Number stating this KMS instance maximum key entries, which can be handled at once. For example number of keys which can be requested via ETSI GS QKD 014 at once or forwarded through this instance at once.
+                      max_key_size:
+                        type: integer
+                        minimum: 0
+                        description: Number in bit stating the biggest key size this KMS can handle.
+                      min_key_size: 
+                        type: integer
+                        minimum: 0
+                        description: Number in bit stating the smallest key size this KMS can handle.
+                      max_SAE_ID_count:
+                        type: integer
+                        minimum: 0
+                        description: Number stating if this KMS supports group keys and if so with how many participants. 0 means no group keys, 1 is one additional slave SAE etc.
+                      status_extension:
+                        type: object
+                        description: Any additional information. Aggregated and relayed from all KMS instances.
+                    required:
+                      - source_KME_ID
+                      - target_KME_ID
+                      - key_size
+                      - stored_key_count
+                      - max_key_count
+                      - max_key_per_request
+                      - max_key_size
+                      - min_key_size
+                      - max_SAE_ID_count
                 required:
                   - key_relay_support
                   - app_api_support
