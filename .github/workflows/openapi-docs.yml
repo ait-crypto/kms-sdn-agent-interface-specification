@@ -28,8 +28,8 @@ jobs:
       - name: Generate HTML
         run: |
           mkdir -p doc/pub
-          redocly build-docs openapi/kms_to_sdn_api.yaml -o doc/pub/kms.html
-          redocly build-docs openapi/sdn_to_kms_api.yaml -o doc/pub/qkd.html
+          redocly build-docs openapi/kms_to_sdn_api.yaml -o doc/pub/kms-to-sdn-api.html
+          redocly build-docs openapi/sdn_to_kms_api.yaml -o doc/pub/sdn-to-kms-api.html
 
       - uses: actions/upload-artifact@v4
         with:
@@ -52,8 +52,8 @@ jobs:
       - name: Generate PDFs
         run: |
           mkdir -p doc/pub
-          rapipdf openapi/kms_to_sdn_api.yaml -o doc/pub/kms.pdf -c doc/pub/rapipdf_config.json
-          rapipdf openapi/sdn_to_kms_api.yaml -o doc/pub/qkd.pdf -c doc/pub/rapipdf_config.json
+          rapipdf openapi/kms_to_sdn_api.yaml -o doc/pub/kms_to_sdn_api.pdf -c doc/tooling/rapipdf_config.json
+          rapipdf openapi/sdn_to_kms_api.yaml -o doc/pub/sdn_to_kms_api.pdf -c doc/tooling/rapipdf_config.json
 
       - uses: actions/upload-artifact@v4
         with:
@@ -70,7 +70,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          path: doc
+          path: doc/pub
 
       - name: Compute deploy path
         run: |
