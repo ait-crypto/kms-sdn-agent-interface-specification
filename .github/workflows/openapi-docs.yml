@@ -91,7 +91,7 @@ jobs:
         run: |
           REPO=${GITHUB_REPOSITORY#*/}
           BASE="https://${GITHUB_REPOSITORY_OWNER}.github.io/$REPO/${DEPLOY_PATH}"
-          echo "$BASE/html/kms.html"
-          echo "$BASE/html/qkd.html"
-          echo "$BASE/pdf/kms.pdf"
-          echo "$BASE/pdf/qkd.pdf"
+          echo "$BASE/html/kms-to-sdn-api.html"
+          echo "$BASE/html/sdn-to-kms-api.html"
+          echo "$BASE/pdf/kms_to_sdn_api.pdf"
+          echo "$BASE/pdf/sdn_to_kms_api.pdf"
