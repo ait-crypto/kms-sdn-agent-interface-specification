@@ -1,0 +1,97 @@
+name: Generate OpenAPI Docs
+
+on:
+  push:
+    branches: ['**']
+    tags: ['*']
+    paths:
+      - openapi/kms_to_sdn_api.yaml
+      - openapi/sdn_to_kms_api.yaml
+      - doc/tooling/rapipdf_config.json
+      - .github/workflows/openapi-docs.yml
+  workflow_dispatch:
+
+jobs:
+  html-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Redocly
+        run: npm install -g @redocly/cli
+
+      - name: Generate HTML
+        run: |
+          mkdir -p doc/pub
+          redocly build-docs openapi/kms_to_sdn_api.yaml -o doc/pub/kms.html
+          redocly build-docs openapi/sdn_to_kms_api.yaml -o doc/pub/qkd.html
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: html
+          path: doc/pub/*.html
+
+  pdf-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rapipdf CLI
+        run: npm install -g @kingjan1999/rapipdf-cli
+
+      - name: Generate PDFs
+        run: |
+          mkdir -p doc/pub
+          rapipdf openapi/kms_to_sdn_api.yaml -o doc/pub/kms.pdf -c doc/pub/rapipdf_config.json
+          rapipdf openapi/sdn_to_kms_api.yaml -o doc/pub/qkd.pdf -c doc/pub/rapipdf_config.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pdf
+          path: doc/pub/*.pdf
+
+  deploy-pages:
+    runs-on: ubuntu-latest
+    needs: [html-docs, pdf-docs]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: doc
+
+      - name: Compute deploy path
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "DEPLOY_PATH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_PATH=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./doc/pub
+          destination_dir: ${{ env.DEPLOY_PATH }}
+
+      - name: Print URLs
+        run: |
+          REPO=${GITHUB_REPOSITORY#*/}
+          BASE="https://${GITHUB_REPOSITORY_OWNER}.github.io/$REPO/${DEPLOY_PATH}"
+          echo "$BASE/html/kms.html"
+          echo "$BASE/html/qkd.html"
+          echo "$BASE/pdf/kms.pdf"
+          echo "$BASE/pdf/qkd.pdf"

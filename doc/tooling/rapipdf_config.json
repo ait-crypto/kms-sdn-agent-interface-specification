@@ -1,0 +1,61 @@
+{
+  "pdfSchemaStyle": "table",
+  "pdfStyles": {
+    "title": { "font": "DejaVu", "fontSize": 32 },
+    "h1": { "font": "DejaVu", "fontSize": 22 },
+    "h2": { "font": "DejaVu", "fontSize": 20 },
+    "h3": { "font": "DejaVu", "fontSize": 18 },
+    "h4": { "font": "DejaVu", "fontSize": 16 },
+    "h5": { "font": "DejaVu", "fontSize": 14 },
+    "h6": { "font": "DejaVu", "fontSize": 12, "bold": true },
+    "p": { "font": "DejaVu", "fontSize": 12 },
+    "small": { "font": "DejaVu", "fontSize": 10 },
+    "sub": { "font": "DejaVu", "fontSize": 8 },
+    "right": { "alignment": "right" },
+    "left": { "alignment": "left" },
+    "topMargin1": { "margin": [0, 180, 0, 10] },
+    "topMargin2": { "margin": [0, 60, 0, 5] },
+    "topMargin3": { "margin": [0, 20, 0, 3] },
+    "topMargin4": { "margin": [0, 15, 0, 3] },
+    "topMarginRegular": { "margin": [0, 3, 0, 0] },
+    "tableMargin": { "margin": [0, 5, 0, 15] },
+    "b": { "bold": true },
+    "i": { "italics": true },
+    "primary": { "color": "#b44646" },
+    "alternate": { "color": "#005b96" },
+    "gray": { "color": "#333333" },
+    "lightGray": { "color": "#000000" },
+    "darkGray": { "color": "#666666" },
+    "red": { "color": "orangered" },
+    "blue": { "color": "#005b96" },
+    "mono": { "font": "DejaVuMono", "fontSize": 10 },
+    "monoSub": { "font": "DejaVuMono", "fontSize": 8 }
+  },
+  "pdfFonts": {
+    "DejaVu": {
+      "normal": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+      "bold": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+      "italics": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
+      "bolditalics": "/usr/share/fonts/truetype/dejavu/DejaVuSans-BoldOblique.ttf"
+    },
+
+    "DejaVuMono": {
+      "normal": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+      "bold": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf",
+      "italics": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Oblique.ttf",
+      "bolditalics": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-BoldOblique.ttf"
+    },
+    "Roboto": {
+      "normal": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+      "bold": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+      "italics": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
+      "bolditalics": "/usr/share/fonts/truetype/dejavu/DejaVuSans-BoldOblique.ttf"
+    },
+    "RobotoMono": {
+      "normal": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+      "bold": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf",
+      "italics": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Oblique.ttf",
+      "bolditalics": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-BoldOblique.ttf"
+    }
+  }
+}
