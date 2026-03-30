@@ -40,7 +40,7 @@ e) SDN Agent to SDN Controller Interface, typically ETSI GS QKD [015](https://ww
 
 q) Quantum channel, typically optical fiber.
 
-As it becomes apparent from this list, the KMS to SDN-Agent interface lacks clear specification by ETSI GS QKD or any other organization. Therefore, AIT developed a simple API with a low barrier for adaption and a feature set which satisfies the requirements of a SDN-managed QKDN.
+As it becomes apparent from this list, the KMS to SDN-Agent interface lacks clear specification by ETSI GS QKD or any other organization. Therefore, AIT developed a simple API with a low barrier for adaption and a feature set which satisfies the requirements of an SDN-managed QKDN.
 
 An earlier version of this API was developed together with Universidad Politécnica de Madrid (UPM), Nextworks and Telefonica within the scope of the [DISCRETION project](https://discretion-eu.com/).
 
