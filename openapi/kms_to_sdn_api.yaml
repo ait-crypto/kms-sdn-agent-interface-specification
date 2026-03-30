@@ -96,27 +96,27 @@ paths:
                   stored_key_count:
                     type: integer
                     minimum: 0
-                    description: Smallest number given by KMS instances in the path stating the number of stored keys which could be delivered to the application. Number of keys is based on number of entries of the default key size.
+                    description: Currently available number of key entries which could be delivered to the application. Determined by the smallest number given by KMS instances in the path. Number of keys is based on the number of entries of the default key size.
                   max_key_count:
                     type: integer
                     minimum: 0
-                    description: Smallest number given by KMS instances in the path stating their max key store
+                    description: Maximum possible key store in entries of default key sizes. Determined by the smallest number given by KMS instances in the path.
                   max_key_per_request:
                     type: integer
                     minimum: 0
-                    description: Smallest number given by KMS instances in the path stating their maximum key batch to Forward
+                    description: Maximum key batch allowed in one request. This is determined by the smallest number given by KMS instances in the path.
                   max_key_size:
                     type: integer
                     minimum: 0
-                    description: Smallest number in bit given by KMS instances in the path stating the biggest key size they can handle.
+                    description: Maximum key size in bit, which KMS instances can handle. This is determined by the smallest number given by KMS instances in the path.
                   min_key_size: 
                     type: integer
                     minimum: 0
-                    description: Biggest number in bit given by KMS instances in the path stating of the smallest key size they can handle.
+                    description: Minimum key size in bit, which can be handled. This is determined by the biggest number given by KMS instances in the path.
                   max_SAE_ID_count:
                     type: integer
                     minimum: 0
-                    description: Smallest number given by KMS instances in the path stating if they support group keys and if so with how many participants.
+                    description: Stating if group keys are supported and if so with how many additional participants. 0 means no additional SAE IDs. This is determined by the smallest number given by the specified source and destination KMS instances.
                   status_extension:
                     type: object
                     description: any additional information. Aggregated and relayed from the instances.
