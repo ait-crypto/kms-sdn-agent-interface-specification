@@ -101,7 +101,7 @@ This can be a plain IP address (v4/v6 or others) with a port or a domain name, f
 
 ### 3.1.2. Note 2, list type
 
-The node entries are a list type, because it bi-directional and multi-path forwarding should be supported. Each KMS instance receives all the neighbouring relaying nodes' URIs, as shown in the following figure:
+The node entries are a list type, because bidirectional and multi-path forwarding should be supported. Each KMS instance receives all the neighboring relaying nodes' URIs, as shown in the following figure:
 
 ![relay_config_visualization](./figures/relay_config_visualization.png)
 
