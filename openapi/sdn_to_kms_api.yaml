@@ -317,7 +317,21 @@ paths:
                   qkd_devices:
                     type: array
                     items:
-                      $ref: "#/components/schemas/qkd-device-info"
+                      allOf:
+                        - type: object
+                          properties:
+                            device_id:
+                              type: string
+                              format: uuid
+                          required:
+                            - device_id
+                        - $ref: "#/components/schemas/qkd-device-info"
+                      required:
+                        - link_id
+                        - state
+                        - interface
+                        - protocol
+                        - peer_kms
         "400":
           description: Bad request
           content:
@@ -742,6 +756,10 @@ components:
     qkd-device-info:
       type: object
       properties:
+        link_id:
+          description: The ID of the link this device is associate to.
+          type: string
+          format: uuid
         label:
           type: string
           description: Human readable label, for example vendor name and model number.
@@ -759,6 +777,7 @@ components:
           enum:
             - "etsi_004"
             - "etsi_014"
+            - "skip"
         protocol:
           type: string
           description: Transport protocol used, for ETSI GS QKD 014 typically https.
@@ -773,7 +792,7 @@ components:
         - $ref: "#/components/schemas/qkd-device-info-connection"
         - type: object
           required:
-            - device_id
+            - link_id
             - state
             - label
             - interface
