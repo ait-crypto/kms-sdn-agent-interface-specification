@@ -173,7 +173,7 @@ paths:
                   $ref: "#/components/schemas/qos-data"
                 performance:
                   type: array
-                  description: Current performance indicators of this instance. Relevant for path selection at SDN Controller
+                  description: Current performance indicators of this instance. Relevant for path selection at SDN Controller. KMS reports current values of all direct links, as it does not know yet the next hop to take.
                   items:
                     type: object
                     minItems: 1
@@ -248,7 +248,7 @@ paths:
       tags:
         - Link
       summary: Update link status by destination APP
-      description: When a destination APP registers with a KMS, the KMS informs the SDN of the destination APP'S registration. This is required in ETSI 015.
+      description: When a destination APP registers with a KMS, the KMS informs the SDN of the destination APP registration. This indicates, that the path was closed.
       operationId: patch_link_registration
       requestBody:
         required: true
