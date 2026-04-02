@@ -200,9 +200,9 @@ paths:
       operationId: get_monitor_status
       parameters:
         - in: query
-          name: reset
+          name: new_operation_state_only
           required: false
-          description: If true, reset operational info after this request to normal operation. If an error was reported in this response, it is not considered for the next request, if this parameter was true. If not given default of "false" is used.
+          description: If true, only consider operational status events since last query. If not given default of "false" is used.
           schema:
             type: boolean
             default: false
