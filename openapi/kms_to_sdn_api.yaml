@@ -4,8 +4,7 @@ info:
   description: Messages the KMS sends to the SDN
   version: 2.1.0
   contact:
-    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues
-
+    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
 servers:
   - url: https://sdn_server/api/v2/sdn
 tags:

@@ -4,7 +4,11 @@ info:
   description: Messages the SDN sends to the KMS
   version: 2.1.0
   contact:
-    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues
+    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
+  x-logo:
+    url: 'https://raw.githubusercontent.com/ait-crypto/kms-sdn-agent-interface-specification/refs/heads/feature/47-add-logo/doc/figures/QUICKS-logo.png'
+    backgroundColor: '#FFFFFF'
+    altText: 'QUICKS logo'
 servers:
   - url: http://kms_server/api/v2/sdn
 tags:
