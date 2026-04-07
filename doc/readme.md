@@ -1,4 +1,6 @@
-Specification details<!-- omit in toc -->
+![](./figures/QUICKS-logo-Logo%20with%20long%20form.png)
+
+QUICKS Specification details<!-- omit in toc -->
 ==
 
 - [1. Introduction](#1-introduction)

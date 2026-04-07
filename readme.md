@@ -1,3 +1,5 @@
+![Quicks-logo](./doc/figures/QUICKS-logo-Logo%20with%20long%20form.png)
+
 QUICKS: QKDN Universal Interface for Communication between KMS and SDN<!-- omit in toc -->
 ==
 

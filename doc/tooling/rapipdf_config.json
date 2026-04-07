@@ -57,5 +57,6 @@
       "italics": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Oblique.ttf",
       "bolditalics": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-BoldOblique.ttf"
     }
-  }
+  },
+  "logoTop": "doc/figures/QUICKS-logo.png"
 }
