@@ -2,10 +2,13 @@ openapi: 3.1.2
 info:
   title: KMS to SDN Agent API
   description: Messages the KMS sends to the SDN
-  version: 2.0.0
+  version: 2.1.0
   contact:
-    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues
-
+    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
+  x-logo:
+    url: 'https://raw.githubusercontent.com/ait-crypto/kms-sdn-agent-interface-specification/refs/heads/main/doc/figures/QUICKS-logo.png'
+    backgroundColor: '#FFFFFF'
+    altText: 'QUICKS logo'
 servers:
   - url: https://sdn_server/api/v2/sdn
 tags:
@@ -51,7 +54,98 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/error-response"
-                
+
+  /link/status:
+    get:
+      tags:
+        - Link
+      summary: Get status of link
+      description: When an application queries the KMS for the status via ETSI GS QKD 014 /status message, the KMS has to provide the information how many keys are available on the link, but this involves remote peers, therefore the message is relied to the SDN to solve.
+      operationId: get_link_status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                master_sae_id:
+                  type: string
+                  example: "7184f8e9-4503-45d6-a399-afb9c0e61d06"
+                slave_sae_id:
+                  type: string
+                  example: "9dd59892-db33-4db5-8e39-76b4a44e4aea"
+              required:
+                - master_sae_id
+                - slave_sae_id
+      responses:
+        "200":
+          description: Successful path found and metrics available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  source_KME_ID:
+                    type: string
+                    description: Source KMS ID, most likely the one which received the query.
+                  target_KME_ID:
+                    type: string
+                    description: Remote peer KMS id.
+                  key_size:
+                    type: integer
+                    minimum: 0
+                    description: Smallest number in bit given by KMS instances in the path stating their default key size, all other parameters use this for calculations.
+                  stored_key_count:
+                    type: integer
+                    minimum: 0
+                    description: Currently available number of key entries which could be delivered to the application. Determined by the smallest number given by KMS instances in the path. Number of keys is based on the number of entries of the default key size.
+                  max_key_count:
+                    type: integer
+                    minimum: 0
+                    description: Maximum possible key store in entries of default key sizes. Determined by the smallest number given by KMS instances in the path.
+                  max_key_per_request:
+                    type: integer
+                    minimum: 0
+                    description: Maximum key batch allowed in one request. This is determined by the smallest number given by KMS instances in the path.
+                  max_key_size:
+                    type: integer
+                    minimum: 0
+                    description: Maximum key size in bit, which KMS instances can handle. This is determined by the smallest number given by KMS instances in the path.
+                  min_key_size: 
+                    type: integer
+                    minimum: 0
+                    description: Minimum key size in bit, which can be handled. This is determined by the biggest number given by KMS instances in the path.
+                  max_SAE_ID_count:
+                    type: integer
+                    minimum: 0
+                    description: Stating if group keys are supported and if so with how many additional participants. 0 means no additional SAE IDs. This is determined by the smallest number given by the specified source and destination KMS instances.
+                  status_extension:
+                    type: object
+                    description: any additional information. Aggregated and relayed from the instances.
+                required:
+                  - source_KME_ID
+                  - target_KME_ID
+                  - key_size
+                  - stored_key_count
+                  - max_key_count
+                  - max_key_per_request
+                  - max_key_size
+                  - min_key_size
+                  - max_SAE_ID_count
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/error-response"
+        "500":
+          description: Internal error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/error-response"
+
   /link/registration:
     post:
       tags:
@@ -82,7 +176,7 @@ paths:
                   $ref: "#/components/schemas/qos-data"
                 performance:
                   type: array
-                  description: Current performance indicators of this instance. Relevant for path selection at SDN Controller
+                  description: Current performance indicators of this instance. Relevant for path selection at SDN Controller. KMS reports current values of all direct links, as it does not know yet the next hop to take.
                   items:
                     type: object
                     minItems: 1
@@ -157,7 +251,7 @@ paths:
       tags:
         - Link
       summary: Update link status by destination APP
-      description: When a destination APP registers with a KMS, the KMS informs the SDN of the destination APP'S registration. This is required in ETSI 015.
+      description: When a destination APP registers with a KMS, the KMS informs the SDN of the destination APP registration. This indicates, that the path was closed.
       operationId: patch_link_registration
       requestBody:
         required: true

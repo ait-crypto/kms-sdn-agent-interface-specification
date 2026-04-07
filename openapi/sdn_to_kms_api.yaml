@@ -2,9 +2,13 @@ openapi: 3.1.2
 info:
   title: SDN Agent to KMS API
   description: Messages the SDN sends to the KMS
-  version: 2.0.0
+  version: 2.1.0
   contact:
-    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues
+    url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
+  x-logo:
+    url: 'https://raw.githubusercontent.com/ait-crypto/kms-sdn-agent-interface-specification/refs/heads/main/doc/figures/QUICKS-logo.png'
+    backgroundColor: '#FFFFFF'
+    altText: 'QUICKS logo'
 servers:
   - url: http://kms_server/api/v2/sdn
 tags:
@@ -26,7 +30,7 @@ paths:
       summary: Get this API version
       tags:
         - API
-      description: State this SDN API version number which is implemented and supported by the KMS
+      description: QUICKS API version number which is implemented and supported by the KMS
       operationId: get_version
       responses:
         "200":
@@ -37,10 +41,10 @@ paths:
                 type: object
                 properties:
                   version:
+                    description: Version number in semantic versioning
                     type: string
                     example: "2.0.0"
                     pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$' # official regex for semantic versioning, see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-                    description: Version number in semantic versioning
                 required:
                   - version
         "400":
@@ -65,7 +69,7 @@ paths:
       operationId: get_monitor_capabilities
       responses:
         "200":
-          description: The response states whether or not the KMS provides key relay support.
+          description: The response states different KMS API capabilities.
           content:
             application/json:
               schema:
@@ -75,14 +79,61 @@ paths:
                     type: boolean
                     enum: [true, false]
                     example: true
-                    description: true = key relay supported, false = it isn't
+                    description: Is this KMS instance capable of relaying keying material? If true, key relay supported, if false it isn't.
                   app_api_support:
                     type: array
                     items:
                       type: string
                       enum: ["etsi_004", "etsi_014", "kmip", "skip"]
                       example: "etsi_014"
-                      description: specify supported interfaces. The enum defined strings should be used. If additional interfaces are provided, state lower case snake case name.
+                      description: Supported interfaces by the KMS. The enum defined strings should be used. If additional interfaces are provided, state lower case snake case name.
+                  etsi_014_info:
+                    type: object
+                    properties:
+                      KME_ID: 
+                        type: string
+                        description: This KMS instance ID
+                      key_size:
+                        type: integer
+                        minimum: 0
+                        description: Number in bit stating the default key size of this KMS, all other parameters use this for calculations.
+                      stored_key_count:
+                        type: integer
+                        minimum: 0
+                        description: Number of stored keys which are available and could be delivered to the application. Number of keys is based on number of entries of the default key size. Sum of all Links, per link data available via link performance endpoint.
+                      max_key_count:
+                        type: integer
+                        minimum: 0
+                        description: Number stating this KMS instance maximum key store. This assumes above default key size.
+                      max_key_per_request:
+                        type: integer
+                        minimum: 0
+                        description: Number stating this KMS instance maximum key entries, which can be handled at once. For example number of keys which can be requested via ETSI GS QKD 014 at once or forwarded through this instance at once.
+                      max_key_size:
+                        type: integer
+                        minimum: 0
+                        description: Number in bit stating the biggest key size this KMS can handle.
+                      min_key_size: 
+                        type: integer
+                        minimum: 0
+                        description: Number in bit stating the smallest key size this KMS can handle.
+                      max_SAE_ID_count:
+                        type: integer
+                        minimum: 0
+                        description: Number stating if this KMS supports group keys and if so with how many participants. 0 means no group keys, 1 is one additional slave SAE etc.
+                      status_extension:
+                        type: object
+                        description: Any additional information. It is aggregated from all KMS instances in the SDN Controller.
+                    required:
+                      - source_KME_ID
+                      - target_KME_ID
+                      - key_size
+                      - stored_key_count
+                      - max_key_count
+                      - max_key_per_request
+                      - max_key_size
+                      - min_key_size
+                      - max_SAE_ID_count
                 required:
                   - key_relay_support
                   - app_api_support
@@ -123,10 +174,10 @@ paths:
                     example: "AURORA KMS"
                     description: Device brand name (model)
                   version:
+                    description: Version number in semantic versioning
                     type: string
                     example: "1.0.0"
                     pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$' # official regex for semantic versioning, see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-                    description: Version number in semantic versioning
                 required:
                   - vendor
                   - model
@@ -151,6 +202,14 @@ paths:
       summary: Get KMS status
       description: Get the status from the KMS, it can be online or stopped.
       operationId: get_monitor_status
+      parameters:
+        - in: query
+          name: new_operation_state_only
+          required: false
+          description: If true, only consider operational status events since last query. If not given default of "false" is used.
+          schema:
+            type: boolean
+            default: false
       responses:
         "200":
           description: description of the status
@@ -161,9 +220,9 @@ paths:
                 properties:
                   state:
                     type: string
-                    enum: ["online", "stopped"]
+                    enum: ["online", "stopped", "offline"]
                     example: "online"
-                    description: If the KMS is able to answer, it can only answer online or stopped. If it can't answer it is assumed to be offline, see errors below. Stopped is a state, where the KMS is alive but not operational, which could for example be a maintenance state or similar.
+                    description: State of the KMS. "online" if operational, stopped if running but not operational, offline if not operational. If it can't answer it is assumed to be offline, see error below. Stopped is a state, where the KMS is running but not operational, which could for example be a maintenance state or similar.
                   operation:
                     type: string
                     enum: ["normal operation", "warnings", "errors", "critical"]
@@ -196,7 +255,7 @@ paths:
       operationId: get_monitor_log
       responses:
         "200":
-          description: Log file. State the file format in the MIME type notation in the http Content-Type header. Any type can be returned, some examples are given, but it is beyond this specification to specify the log format.
+          description: Log file of the KMS. State the file format in the MIME type notation in the http Content-Type header. Any type can be returned, some examples are given, but it is beyond this specification to specify the log format.
           content:
             "*/*":
               schema:
@@ -262,7 +321,21 @@ paths:
                   qkd_devices:
                     type: array
                     items:
-                      $ref: "#/components/schemas/qkd-device-info"
+                      allOf:
+                        - type: object
+                          properties:
+                            device_id:
+                              type: string
+                              format: uuid
+                          required:
+                            - device_id
+                        - $ref: "#/components/schemas/qkd-device-info"
+                      required:
+                        - link_id
+                        - state
+                        - interface
+                        - protocol
+                        - peer_kms
         "400":
           description: Bad request
           content:
@@ -291,6 +364,7 @@ paths:
               type: object
               properties:
                 state:
+                  description: Target state of the KMS.
                   type: string
                   enum: ["stopped", "offline", "online"]
                   example: "offline"
@@ -337,7 +411,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/qkd-device-info-connection"
+              $ref: "#/components/schemas/qkd-device-info-connection-post"
       responses:
         "201":
           description: QKD device successfully created
@@ -484,7 +558,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
-          description: Not found, API endpoint does not exist
+          description: Not found, API endpoint does not exist, probably invalid link_id given.
         "500":
           description: Internal error
           content:
@@ -616,7 +690,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
-          description: Not found, API endpoint does not exist.
+          description: Not found, API endpoint does not exist, probably invalid key_stream_id given.
         "500":
           description: Internal error
           content:
@@ -639,7 +713,7 @@ paths:
             type: string
             format: uuid
       responses:
-        "200":
+        "204":
           description: Forward table row deleted
         "400":
           description: Bad request
@@ -648,7 +722,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
-          description: Not found, API endpoint does not exist.
+          description: Not found, API endpoint does not exist, probably invalid key_stream_id given.
         "500":
           description: Internal error
           content:
@@ -686,38 +760,49 @@ components:
     qkd-device-info:
       type: object
       properties:
+        link_id:
+          description: The ID of the link this device is associate to.
+          type: string
+          format: uuid
         label:
           type: string
           description: Human readable label, for example vendor name and model number.
           example: "'Alice & Bob Quantum Inc.' on node AIT"
         state:
           type: string
+          description: Current or target state after successful operation
           enum:
             - "online"
             - "stopped"
             - "offline"
         interface:
           type: string
+          description: Interface type of the QKD device
           enum:
             - "etsi_004"
             - "etsi_014"
             - "skip"
-            - "kmip"
         protocol:
           type: string
-          description: for ETSI GS QKD 014 and SKIP typically https.
+          description: Transport protocol used, for ETSI GS QKD 014 typically https.
           example: https
         peer_kms:
           type: string
           description: to which peer is this device connected, does not have to be UUID format, but unique in network
           example: "53d3fa09-9e87-40d5-a7c0-974fcfe95c72"
-      required:
-        - device_id
-        - state
-        - label
-        - interface
-        - protocol
-        - peer_kms
+
+    qkd-device-info-connection-post:
+      allOf:
+        - $ref: "#/components/schemas/qkd-device-info-connection"
+        - type: object
+          required:
+            - link_id
+            - state
+            - label
+            - interface
+            - protocol
+            - peer_kms
+            - server_address
 
     qkd-device-info-connection:
       allOf:
@@ -726,20 +811,67 @@ components:
           description: additional properties are allowed if supported by SDN and KMS.
           properties:
             server_address:
+              description: URI of the QKD device server. Specify domain (or IP) and port.
               type: string
-              format: uri
-            primary_id:
-              description: In ETSI GS QKD 014 also called Master SAE ID
-              type: string
-              example: "6a45ee57-8673-40cb-97ed-6f4f06e1f975"
-            secondary_id:
-              description: In ETSI GS QKD 014 also called Slave SAE ID
-              type: string
-              example: "55169914-40a0-43de-8cf1-d3472db644bd"
-          required:
-            - server_address
-            - primary_id
-            - secondary_id
+              example: "172.0.10.101:5683"
+            etsi_014:
+              description: Only required if QKD device uses ETSI GS QKD 014 interface.
+              type: object
+              properties:
+                primary_id:
+                  description: In ETSI GS QKD 014 also called Master SAE ID
+                  type: string
+                  example: "6a45ee57-8673-40cb-97ed-6f4f06e1f975"
+                secondary_id:
+                  description: In ETSI GS QKD 014 also called Slave SAE ID
+                  type: string
+                  example: "55169914-40a0-43de-8cf1-d3472db644bd"
+              required:
+                - primary_id
+                - secondary_id
+            etsi_004:
+              $ref: "#/components/schemas/etsi_004_device_QoS_data"
+        
+    etsi_004_device_QoS_data:
+      type: object
+      description: only required if QKD device uses ETSI GS QKD 004 interface. All values according to ETSI GS QKD 004 specification.
+      properties:
+        source:
+          type: string
+          format: URI
+          description: source URI
+        destination:
+          type: string
+          format: URI
+          description: source URI
+        key_chunk_size:
+          type: integer
+          description: length of key chunks in Byte.
+          example: 32
+        max_bps:
+          type: integer
+          example: 128
+        min_bps:
+          type: integer
+          example: 64
+        jitter:
+          type: integer
+          example: 1
+        priority:
+          type: integer
+          example: 3
+        timeout:
+          type: integer
+          example: 50
+        ttl:
+          type: integer
+          example: 5
+        metadata_mimetype:
+          type: string
+          example: application/json
+      required:
+        - source
+        - destination
 
     kms-performance-entry:
       type: object
