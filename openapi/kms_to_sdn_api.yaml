@@ -5,6 +5,10 @@ info:
   version: 2.1.0
   contact:
     url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
+  x-logo:
+    url: 'https://raw.githubusercontent.com/ait-crypto/kms-sdn-agent-interface-specification/refs/heads/main/doc/figures/QUICKS-logo.png'
+    backgroundColor: '#FFFFFF'
+    altText: 'QUICKS logo'
 servers:
   - url: https://sdn_server/api/v2/sdn
 tags:
