@@ -1,6 +1,6 @@
 openapi: 3.1.2
 info:
-  title: KMS to SDN Agent API
+  title: KMS to SDN Agent API - SDN server
   description: Messages the KMS sends to the SDN
   version: 2.1.1
   contact:
