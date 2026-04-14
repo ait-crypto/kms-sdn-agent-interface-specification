@@ -92,7 +92,7 @@ The PDF is generated with [rapipdf-cli by kingjan1999](https://github.com/kingja
 - PDF of the [KMS API (main)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf)
 - PDF of the [SDN API (main)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf)
 - PDF of the [KMS API (development)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/development/pdf/sdn_to_kms_api.pdf)
-- PDF of the [SDN API (development)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/development/kms_to_sdn_api.pdf)
+- PDF of the [SDN API (development)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/development/kms_to_sdn_api.pdf)
 
 Any other branch can be viewed by adapting the URL, provided it triggered the corresponding GitHub action: `https://ait-crypto.github.io/kms-sdn-agent-interface-specification/<branch-name>/pdf/sdn_to_kms_api.pdf` and `https://ait-crypto.github.io/kms-sdn-agent-interface-specification/<branch-name>/pdf/kms_to_sdn_api.pdf`. If the `<branch_name>` contains the `/` character, it has to be replaced by a `-` character.
 
