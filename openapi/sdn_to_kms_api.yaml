@@ -2,7 +2,7 @@ openapi: 3.1.2
 info:
   title: SDN Agent to KMS API
   description: Messages the SDN sends to the KMS
-  version: 2.1.0
+  version: 2.1.1
   contact:
     url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
   x-logo:
@@ -10,7 +10,7 @@ info:
     backgroundColor: '#FFFFFF'
     altText: 'QUICKS logo'
 servers:
-  - url: http://kms_server/api/v2/sdn
+  - url: http://kms_server/api/v2/kms
 tags:
   - name: monitor
     description: Generic monitoring endpoints
