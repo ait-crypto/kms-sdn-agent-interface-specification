@@ -1,8 +1,8 @@
 openapi: 3.1.2
 info:
-  title: KMS to SDN Agent API
+  title: KMS to SDN Agent API - SDN server
   description: Messages the KMS sends to the SDN
-  version: 2.1.0
+  version: 2.1.1
   contact:
     url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
   x-logo:
@@ -62,22 +62,23 @@ paths:
       summary: Get status of link
       description: When an application queries the KMS for the status via ETSI GS QKD 014 /status message, the KMS has to provide the information how many keys are available on the link, but this involves remote peers, therefore the message is relied to the SDN to solve.
       operationId: get_link_status
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                master_sae_id:
-                  type: string
-                  example: "7184f8e9-4503-45d6-a399-afb9c0e61d06"
-                slave_sae_id:
-                  type: string
-                  example: "9dd59892-db33-4db5-8e39-76b4a44e4aea"
-              required:
-                - master_sae_id
-                - slave_sae_id
+      parameters:
+        - in: query
+          name: master_sae_id
+          description: Master SAE ID as per ETSI GS QKD 014
+          example: "7184f8e9-4503-45d6-a399-afb9c0e61d06"
+          schema:
+            type: string
+          required: true
+
+        - in: query
+          name: slave_sae_id
+          description: Slave SAE ID as per ETSI GS QKD 014
+          example: "9dd59892-db33-4db5-8e39-76b4a44e4aea"
+          schema:
+            type: string
+          required: true
+
       responses:
         "200":
           description: Successful path found and metrics available
