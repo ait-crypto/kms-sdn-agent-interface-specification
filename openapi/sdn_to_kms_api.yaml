@@ -943,7 +943,7 @@ components:
                 type: string
               application_ids:
                 type: array
+                description: IDs of the peer applications. In case of ETSI 004 URIs, for ETSI 014 network wide unique IDs.
                 items:
-                  description: ID of the peer applications. In case of ETSI 004 URIs, for ETSI 014 network wide unique IDs.
                   type: string
 
