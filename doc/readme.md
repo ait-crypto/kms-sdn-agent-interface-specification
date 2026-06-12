@@ -13,7 +13,10 @@ QUICKS Specification details<!-- omit in toc -->
     - [3.1.1. Note 1, URI authority type](#311-note-1-uri-authority-type)
     - [3.1.2. Note 2, list type](#312-note-2-list-type)
     - [3.1.3. Note 3: Entry order](#313-note-3-entry-order)
-  - [peer\_application\_info](#peer_application_info)
+  - [3.2. peer\_application\_info](#32-peer_application_info)
+  - [3.3. Deadlock-aware implementation](#33-deadlock-aware-implementation)
+    - [3.3.1. Multithread / async patterns](#331-multithread--async-patterns)
+    - [3.3.2. Timeout](#332-timeout)
 
 # 1. Introduction
 
@@ -136,6 +139,24 @@ Therefore, in case of more than two elements, the first entry is designated as t
 
 The destination array for multi path must correspond accordingly for the "destination relay" method.
 
-## peer_application_info
+## 3.2. peer_application_info
 
 Some messages have the additional field `peer_application_info` this is required for group key applications supported by ETSI GS QKD 014. Specifically for the case where the peer applications are spread across multiple nodes. See also [Issue description](https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues/57).
+
+## 3.3. Deadlock-aware implementation
+
+As both communication partners, the KMS and SDN Agent, are a server and a client, it is important to implement those in a way to avoid deadlocks. The following figure outlines a deadlock situation, where at the same time the KMS is a client to the SDN Agent and vice versa.
+
+![deadlock_issue](./figures/sequence_deadlock_example.png)
+
+This is an issue which can usually be solved with different implementation techniques, some of which are outlined here. But to emphasize, this is beyond the API specification, but on the implementation of the KMS or SDN Agent. The following notes are meant as high-level suggestions.
+
+### 3.3.1. Multithread / async patterns
+
+Implement the server and client in different threads This way the client can wait in its thread for the response, while the request at its server can be handled separately.
+
+### 3.3.2. Timeout
+
+Using different timeout behavior is a simple solution. Non-essential messages for which error handling can be easily implemented should have a lower timeout, so for example:
+
+![timeout problem outline](./figures/sequence_deadlock_example_solve_timeout.png)
