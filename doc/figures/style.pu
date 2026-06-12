@@ -111,45 +111,42 @@ skinparam rectangle {
 
 
 <style>
-sequenceDiagram {
-	.kms {
-		BackGroundColor KMS_COLOR;
-		FontColor white;
-		FontStyle bold;
-		SequenceLifeLineBorderColor KMS_COLOR;
-		activationBox {
-			BackGroundColor white;
-			LineColor KMS_COLOR;
-		}
+.kms {
+	BackGroundColor KMS_COLOR;
+	FontColor white;
+	FontStyle bold;
+	activationBox {
+		BackGroundColor white;
+		LineColor KMS_COLOR;
 	}
-	.app {
-		BackGroundColor APP_COLOR;
-		FontColor white;
-		FontStyle bold;
-		activationBox {
-			BackGroundColor white;
-			LineColor APP_COLOR;
-		}
-	}
-	.sdna {
-		BackGroundColor SDN_AGENT_COLOR;
-		FontColor white;
-		FontStyle bold;
-		activationBox {
-			BackGroundColor white;
-			LineColor SDN_AGENT_COLOR;
-		}
-	}
-	.sdnc {
-		BackGroundColor SDN_CONTROLLER_COLOR;
-		FontColor white;
-		FontStyle bold;
-		activationBox {
-			BackGroundColor white;
-			LineColor SDN_CONTROLLER_COLOR;
-		}
-	}
-
 }
+.app {
+	BackGroundColor APP_COLOR;
+	FontColor white;
+	FontStyle bold;
+	activationBox {
+		BackGroundColor white;
+		LineColor APP_COLOR;
+	}
+}
+.sdna {
+	BackGroundColor SDN_AGENT_COLOR;
+	FontColor white;
+	FontStyle bold;
+	activationBox {
+		BackGroundColor white;
+		LineColor SDN_AGENT_COLOR;
+	}
+}
+.sdnc {
+	BackGroundColor SDN_CONTROLLER_COLOR;
+	FontColor white;
+	FontStyle bold;
+	activationBox {
+		BackGroundColor white;
+		LineColor SDN_CONTROLLER_COLOR;
+	}
+}
+
 </style>
 
