@@ -1,0 +1,59 @@
+@startuml ETSI_015_SDN_Network
+!include  ./style.pu
+skinparam componentStyle rectangle
+'skinparam linetype polyline
+'skinparam linetype ortho
+
+hide stereotype
+!define FONT_SIZE 18
+
+skinparam dpi 300
+
+skinparam componentFontSize FONT_SIZE
+skinparam collectionsFontSize FONT_SIZE
+skinparam arrowFontSize FONT_SIZE
+
+allow_mixing
+
+rectangle "SD-QKD Node A" as qkd_node_big{
+    component "SDN-Agent" as sdn_agent <<sdna>>
+    component "App (source)" as app <<app>>
+    collections "QKD Modules" as qkd_modules 
+    component "KMS" as kms <<kms>>
+}
+rectangle "SD-QKD Node D" as qkd_node_big_D{
+    component "SDN-Agent" as sdn_agent_d <<sdna>>
+    component "App(destination)" as app_d <<app>>
+    collections "QKD Modules" as qkd_modules_d
+    component "KMS" as kms_d <<kms>>
+}
+component "SDN-Controller" as sdb_controller <<sdnc>>
+
+component "Node B" as qkd_node_b
+component "Node C" as qkd_node_c
+component "Node E" as qkd_node_e
+
+app -down- kms: a)
+kms -down- qkd_modules: b)
+sdn_agent -[thickness=3] kms: c)
+sdn_agent -down- qkd_modules: d)
+sdb_controller .down. sdn_agent: e)
+
+sdb_controller .down. qkd_node_b
+sdb_controller .down.. qkd_node_c
+sdb_controller .down.. qkd_node_e
+
+qkd_modules -[bold]up- qkd_node_b: q)
+qkd_modules -[bold] qkd_node_c: q)
+qkd_node_b -down[bold]- qkd_node_c
+qkd_modules_d -left[bold]- qkd_node_b
+qkd_node_e -[bold]left- qkd_node_c
+qkd_node_e -right[bold]- qkd_modules_d
+
+app_d -down- kms_d: a)
+kms_d -down- qkd_modules_d: b)
+sdn_agent_d -[thickness=3] kms_d: c)
+sdn_agent_d -down- qkd_modules_d: d)
+sdb_controller .down. sdn_agent_d: e)
+
+@enduml
