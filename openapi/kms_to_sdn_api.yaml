@@ -2,7 +2,7 @@ openapi: 3.1.2
 info:
   title: KMS to SDN Agent API - SDN server
   description: Messages the KMS sends to the SDN
-  version: 2.1.1
+  version: 2.2.0
   contact:
     url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
   x-logo:
@@ -163,15 +163,15 @@ paths:
               properties:
                 source:
                   type: string
-                  description: URI or UUID of the source APP
-                  example: "172.0.10.101:5683"
+                  description: URI or ID of the source APP
+                  example: "application_ID_1"
                 destination:
                   type: array
                   items: 
                     type: string
-                    description: URI or UUID of the destination APP, multiple in case of group key.
+                    description: URI or ID of the destination APP, multiple in case of group key.
                     minItems: 1
-                    example: "172.0.10.102:5683"
+                    example: "application_ID_2"
                 qos_request:
                   description: QoS requested by the KMS, either it is an etsi_004 or etsi_014 request.
                   $ref: "#/components/schemas/qos-data"
@@ -206,31 +206,33 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  key_stream_id:
-                    type: string
-                    format: uuid
-                  next_node_info:
-                    type: array
-                    minItems: 1
-                    description: The URI authority of peer nodes. Usually only one entry in list, for multi path or additional SAE IDs can be multiple entries.
-                    example:
-                      ["172.0.10.103:5683", "172.0.10.104:5683"]
-                    items:
-                      type: string
-                      description: At least one element.
-                  qos:
-                    type: object
-                    description: QoS counter proposal set by the SDN, only ETSI 004
-                    example:
-                      {
-                        "max_bps": 0,
-                        "min_bps": 128,
-                        "jitter": 2,
-                        "priority": 0,
-                        "ttl": 1,
-                      }
+                allOf:
+                  - type: object
+                    properties:
+                      key_stream_id:
+                        type: string
+                        format: uuid
+                      next_node_info:
+                        type: array
+                        minItems: 1
+                        description: The URI authority of peer nodes. Usually only one entry in list, for multi path or additional SAE IDs can be multiple entries.
+                        example:
+                          ["kms-1.net:5683", "kms-3.net:5683"]
+                        items:
+                          type: string
+                          description: At least one element.
+                      qos:
+                        type: object
+                        description: QoS counter proposal set by the SDN, only ETSI 004
+                        example:
+                          {
+                            "max_bps": 0,
+                            "min_bps": 128,
+                            "jitter": 2,
+                            "priority": 0,
+                            "ttl": 1,
+                          }
+                  - $ref: "./sdn_to_kms_api.yaml#/components/schemas/peer_application_info_schema"
                 required:
                   - key_stream_id
                   - next_node_info
@@ -252,7 +254,7 @@ paths:
       tags:
         - Link
       summary: Update link status by destination APP
-      description: When a destination APP registers with a KMS, the KMS informs the SDN of the destination APP registration. This indicates, that the path was closed.
+      description: When the registered application at POST had keys successfully established, the POST is sent by the destination KMS. This indicates, that the path was closed.
       operationId: patch_link_registration
       requestBody:
         required: true
@@ -266,7 +268,7 @@ paths:
                   format: uuid
                 destination:
                   type: string
-                  description: Of type UUID or URI
+                  description: URI or ID of the destination APP
               required:
                 - key_stream_id
                 - destination
