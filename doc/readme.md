@@ -13,6 +13,10 @@ QUICKS Specification details<!-- omit in toc -->
     - [3.1.1. Note 1, URI authority type](#311-note-1-uri-authority-type)
     - [3.1.2. Note 2, list type](#312-note-2-list-type)
     - [3.1.3. Note 3: Entry order](#313-note-3-entry-order)
+  - [3.2. peer\_application\_info](#32-peer_application_info)
+  - [3.3. Deadlock-aware implementation](#33-deadlock-aware-implementation)
+    - [3.3.1. Multithread / async patterns](#331-multithread--async-patterns)
+    - [3.3.2. Timeout](#332-timeout)
 
 # 1. Introduction
 
@@ -34,7 +38,7 @@ As an application either opens a key stream via the ETSI GS QKD 004 `open_connec
 - The SDN Agents on the relay path configure the path with the next node infos to their corresponding KMS instances (msg 7, 9)
 - The original source KMS message, after successful establishment of the relay path, is answered by the SDN Controller to the SDN Agent (msg 10) and in turn to the source KMS (msg 11)
 - If the request was an `open_connect` via the ETSI GS QKD 004 interface, it is answered (msg 12) and as soon as the destination application requests the same key stream to be opened (msg 13, 14) the KMS notifies the SDN Agent of this link update (msg 15).
-- If the request was an `enc_keys` via the ETSI GS QKD 014 interface, first the keys have to be established using the link (msg 18, 19, 20) and upon success the request can be answered (msg 21). Then the destination App (msg 22) requests the same keys via the `dec_keys` endpoint (msg 23). The KMS informs the SDN agent of this link update (msg 24) and delivers the keys (msg 26)
+- If the request was an `enc_keys` via the ETSI GS QKD 014 interface, first the keys have to be established using the link (msg 18, 19, 20) and upon success the relay path is considered successfully closed, which is reported to the SDN Agent and in turn the SDN Controller (msg 21, 22). The `enc_keys` can now be safely answered (msg 23). The destination application can then obtain the same keys via `dec_keys` (msg 25, 26).
 
 ![sequence](figures/sequence_sdn_new_app.png)
 
@@ -48,7 +52,7 @@ In case of the ETSI GS QKD 014, each request by the application results in a new
 The KMS should request from the SDN paths which can also support any internal key consumption.
 
 **Note 4:**
-All communication beyond scope is only exemplary, specifically the communication between the SDN Controller and SDN Agent (messages 4, 6, 8, 10, 16, 25) is out of scope.
+All communication beyond scope is only exemplary, specifically the communication between the SDN Controller and SDN Agent (messages 4, 6, 8, 10, 16, 22) is out of scope.
 
 ## 2.2. Link update (ETSI 004 use-case)
 
@@ -134,3 +138,25 @@ For example in the setup depicted above, if the "destination relay" method is us
 Therefore, in case of more than two elements, the first entry is designated as the primary one, with whom the others are to be combined.
 
 The destination array for multi path must correspond accordingly for the "destination relay" method.
+
+## 3.2. peer_application_info
+
+Some messages have the additional field `peer_application_info` this is required for group key applications supported by ETSI GS QKD 014. Specifically for the case where the peer applications are spread across multiple nodes. See also [Issue description](https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues/57).
+
+## 3.3. Deadlock-aware implementation
+
+As both communication partners, the KMS and SDN Agent, are a server and a client, it is important to implement those in a way to avoid deadlocks. The following figure outlines a deadlock situation, where at the same time the KMS is a client to the SDN Agent and vice versa.
+
+![deadlock_issue](./figures/sequence_deadlock_example.png)
+
+This is an issue which can usually be solved with different implementation techniques, some of which are outlined here. But to emphasize, this is beyond the API specification, but on the implementation of the KMS or SDN Agent. The following notes are meant as high-level suggestions.
+
+### 3.3.1. Multithread / async patterns
+
+Implement the server and client in different threads This way the client can wait in its thread for the response, while the request at its server can be handled separately.
+
+### 3.3.2. Timeout
+
+Using different timeout behavior is a simple solution. Non-essential messages for which error handling can be easily implemented should have a lower timeout, so for example:
+
+![timeout problem outline](./figures/sequence_deadlock_example_solve_timeout.png)

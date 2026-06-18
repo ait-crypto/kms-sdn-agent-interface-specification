@@ -1,6 +1,7 @@
 @startuml
 !include ./style.pu
 autonumber
+hide stereotype
 
 skinparam dpi 300
 
@@ -8,22 +9,22 @@ skinparam dpi 300
 
 title: SDN relay path establishment
 
-participant "SDN Controller" as SDN_Controller
+participant "SDN Controller" as SDN_Controller <<sdnc>>
 
 box "Node A" #WhiteSmoke
-participant "SDN Agent A" as SDN_A
-participant "App A" as App_A
-participant "KMS A" as KMS_A
+participant "SDN Agent A" as SDN_A <<sdna>>
+participant "App A" as App_A <<app>>
+participant "KMS A" as KMS_A <<kms>>
 end box
 box "Node B" #WhiteSmoke
-participant "SDN Agent B" as SDN_B
-participant "KMS B" as KMS_B
+participant "SDN Agent B" as SDN_B <<sdna>>
+participant "KMS B" as KMS_B <<kms>>
 end box
 
 box "Node C" #WhiteSmoke
-participant "SDN Agent C" as SDN_C
-participant "App C" as App_C
-participant "KMS C" as KMS_C
+participant "SDN Agent C" as SDN_C <<sdna>>
+participant "App C" as App_C <<app>>
+participant "KMS C" as KMS_C <<kms>>
 end box
 
 == Application request ==
@@ -69,11 +70,11 @@ KMS_C -> KMS_C: save
 end group
 
 group ETSI 014
+KMS_C <-> SDN_C: <back:greenyellow><color:black>""**link/registration**(PATCH)""\n(dst, KS_ID)
+&SDN_C <-> SDN_Controller: new app
 KMS_A --> App_A: enc_keys\nACK (keys, key_ids)
 App_A -> App_C: send Key_IDs to peer SAE
 App_C -> KMS_C: dec_keys\n(M/S SAEs, key_ids)
-KMS_C <-> SDN_C: <back:greenyellow><color:black>""**link/registration**(PATCH)""\n(dst, KS_ID)
-&SDN_C <-> SDN_Controller: new app
 KMS_C -> App_C: dec_keys\nACK
 end 
 

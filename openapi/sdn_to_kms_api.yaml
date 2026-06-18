@@ -2,7 +2,7 @@ openapi: 3.1.2
 info:
   title: SDN Agent to KMS API - KMS Server
   description: Messages the SDN sends to the KMS
-  version: 2.1.1
+  version: 2.2.0
   contact:
     url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
   x-logo:
@@ -10,7 +10,7 @@ info:
     backgroundColor: '#FFFFFF'
     altText: 'QUICKS logo'
 servers:
-  - url: http://kms_server/api/v2/kms
+  - url: https://kms_server/api/v2/kms
 tags:
   - name: monitor
     description: Generic monitoring endpoints
@@ -586,28 +586,30 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                source:
-                  type: string
-                  description: URI or UUID of the source APP
-                  example: "http://172.0.10.101:5683"
-                destination:
-                  type: array
-                  items: 
-                    type: string
-                    description: URI or UUID of the destination APP, multiple in case of group key.
-                    example: "http://172.0.10.102:5683"
-                    minItems: 1
-                next_node_info:
-                  type: array
-                  description: List of adjacent nodes. Type URI authority
-                  items:
-                    type: string
-                  example: ["kms-1.net:5683", "kms-3.net:5684"]
-                qos_request:
-                  description: QoS requested by the KMS
-                  $ref: "./kms_to_sdn_api.yaml#/components/schemas/qos-data"
+              allOf:
+                - type: object
+                  properties:
+                    source:
+                      type: string
+                      description: URI or ID of the source APP
+                      example: "application_ID_1"
+                    destination:
+                      type: array
+                      items: 
+                        type: string
+                        description: URI or ID of the destination APP, multiple in case of group key.
+                        example: "application_ID_2"
+                        minItems: 1
+                    next_node_info:
+                      type: array
+                      description: List of adjacent nodes. Type URI authority
+                      items:
+                        type: string
+                      example: ["kms-1.net:5683", "kms-3.net:5683"]
+                    qos_request:
+                      description: QoS requested by the KMS
+                      $ref: "./kms_to_sdn_api.yaml#/components/schemas/qos-data"
+                - $ref: "#/components/schemas/peer_application_info_schema"
               required:
                 - source
                 - destination
@@ -646,40 +648,42 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                source:
-                  type: string
-                  description: Source APP's URI or UUID
-                  example: "http://172.0.10.101:5683"
-                destination:
-                  type: array
-                  items: 
-                    type: string
-                    description: URI or UUID of the destination APP, multiple in case of group key.
-                    example: "http://172.0.10.102:5683"
-                    minItems: 1
-                next_node_info:
-                  type: array
-                  description: List of adjacent nodes. Type URI authority.
-                  items:
-                    type: string
-                  example:
-                    ["172.0.10.103:5683", "172.0.10.103:5684"]
-                qos_request:
-                  type: object
-                  description: QoS requested by the KMS
-                  example:
-                    {
-                      "key_chunk_size": 4,
-                      "max_bps": 128,
-                      "min_bps": 64,
-                      "jitter": 1,
-                      "priority": 3,
-                      "timeout": 50,
-                      "ttl": 5,
-                      "metadata_mimetype": "application/json",
-                    }
+              allOf:
+                - type: object
+                  properties:
+                    source:
+                      type: string
+                      description: Source APP's URI or ID
+                      example: "application_ID_1"
+                    destination:
+                      type: array
+                      items: 
+                        type: string
+                        description: URI or ID of the destination APP, multiple in case of group key.
+                        example: "application_ID_2"
+                        minItems: 1
+                    next_node_info:
+                      type: array
+                      description: List of adjacent nodes. Type URI authority.
+                      items:
+                        type: string
+                      example:
+                        ["kms-1.net:5683", "kms-3.net:5683"]
+                    qos_request:
+                      type: object
+                      description: QoS requested by the KMS
+                      example:
+                        {
+                          "key_chunk_size": 4,
+                          "max_bps": 128,
+                          "min_bps": 64,
+                          "jitter": 1,
+                          "priority": 3,
+                          "timeout": 50,
+                          "ttl": 5,
+                          "metadata_mimetype": "application/json",
+                        }
+                - $ref: "#/components/schemas/peer_application_info_schema"
       responses:
         "200":
           description: The relay configuration associated with the given key_stream_id has been replaced by the data in the request
@@ -924,4 +928,22 @@ components:
         - EXKR
         - SKR
         - KAV
+    
+    peer_application_info_schema:
+      type: object
+      properties:
+        peer_application_info:
+          description: Information about which peer application is deployed on which KMS.
+          type: array
+          items:
+            type: object
+            properties:
+              kms_id:
+                description: Unique ID of the KMS instance. If the KMS_ID is the same as the KMS, which sent the request, the applications are served by the caller KMS. A potential use-case for that are group keys, where peer applications are on the same node.
+                type: string
+              application_ids:
+                type: array
+                description: IDs of the peer applications. In case of ETSI 004 URIs, for ETSI 014 network wide unique IDs.
+                items:
+                  type: string
 
