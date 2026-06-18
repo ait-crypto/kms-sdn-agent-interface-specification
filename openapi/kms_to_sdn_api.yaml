@@ -210,7 +210,7 @@ paths:
                   - type: object
                     properties:
                       key_stream_id:
-                        description: Unique ID to reference the key_stream or key batch.
+                        description: Unique ID, corresponds to the ETSI 004 Key Stream ID parameter or identifies an ETSI 014 forwarding path
                         type: string
                         format: uuid
                       next_node_info:
@@ -265,7 +265,7 @@ paths:
               type: object
               properties:
                 key_stream_id:
-                  description: Unique ID to reference the key_stream or key batch.
+                  description: Unique ID, corresponds to the ETSI 004 Key Stream ID parameter or identifies an ETSI 014 forwarding path
                   type: string
                   format: uuid
                 destination:
@@ -301,7 +301,7 @@ paths:
       operationId: delete_link_ks_id
       parameters:
         - name: key_stream_id
-          description: Unique ID to reference the key_stream or key batch.
+          description: Unique ID, corresponds to the ETSI 004 Key Stream ID parameter or identifies an ETSI 014 forwarding path
           in: path
           required: true
           schema:

@@ -10,7 +10,7 @@ info:
     backgroundColor: '#FFFFFF'
     altText: 'QUICKS logo'
 servers:
-  - url: http://kms_server/api/v2/kms
+  - url: https://kms_server/api/v2/kms
 tags:
   - name: monitor
     description: Generic monitoring endpoints
