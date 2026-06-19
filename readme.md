@@ -37,7 +37,7 @@ a) KMS to Application Interface, typically ETSI GS QKD [014](https://www.etsi.or
 
 b) KMS to QKD interface, typically ETSI GS QKD [014](https://www.etsi.org/deliver/etsi_gs/QKD/001_099/014/01.01.01_60/gs_qkd014v010101p.pdf) or [004](https://www.etsi.org/deliver/etsi_gs/QKD/001_099/004/02.01.01_60/gs_qkd004v020101p.pdf).
 
-c) KMS to SDN Agent interface.
+c) **KMS to SDN Agent interface. → QUICKS**
 
 d) SDN Agent to QKD interface, typically ETSI GS QKD [023 (draft)](https://portal.etsi.org/webapp/WorkProgram/Report_WorkItem.asp?WKI_ID=69537).
 
