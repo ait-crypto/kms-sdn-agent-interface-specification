@@ -269,8 +269,13 @@ paths:
                   type: string
                   format: uuid
                 destination:
-                  type: string
-                  description: URI or ID of the destination APP
+                  type: array
+                  description: URI or ID of the destination APP, multiple in case of group key.
+                  example: 
+                    ["application_ID_3a", "application_ID_3b"]
+                  items: 
+                    type: string
+                    minItems: 1
               required:
                 - key_stream_id
                 - destination
