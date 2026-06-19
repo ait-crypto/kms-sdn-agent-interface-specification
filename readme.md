@@ -5,9 +5,6 @@ QUICKS: QKDN Universal Interface for Communication between KMS and SDN<!-- omit 
 
 [![GitHub release](https://img.shields.io/github/v/release/ait-crypto/kms-sdn-agent-interface-specification)](https://github.com/ait-crypto/kms-sdn-agent-interface-specification/releases)
 
-[![KMS server pdf doc](https://img.shields.io/badge/KMS%20server%20API-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf) [![SDN server pdf doc](https://img.shields.io/badge/SDN%20server%20API-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf)
-[![KMS server web page doc](https://img.shields.io/badge/KMS%20server%20API-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/sdn-to-kms-api.html) [![SDN server web page doc](https://img.shields.io/badge/SDN%20server%20API-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/kms-to-sdn-api.html)
-
 - [1. Overview](#1-overview)
 - [2. API outline](#2-api-outline)
 - [3. Notes](#3-notes)
@@ -21,6 +18,14 @@ QUICKS: QKDN Universal Interface for Communication between KMS and SDN<!-- omit 
 - [4. Acknowledgements](#4-acknowledgements)
 
 This repository hosts and maintains the API description developed by AIT for an interface between a Key Management System (KMS) and a Software Defined Network (SDN) Agent for Quantum Key Distribution Networks (QKDN).
+
+This table gives quick links to the API descriptions:
+
+|API | OpenAPI file |PDF view | Web view |
+|----|--------------|---------|----------|
+| KMS Server API |[`sdn_to_kms_api.yaml`](openapi/sdn_to_kms_api.yaml)| [![KMS server pdf doc](https://img.shields.io/badge/KMS%20server-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf) | [![KMS server web page doc](https://img.shields.io/badge/KMS%20server-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/sdn-to-kms-api.html)|
+| SDN Server API | [`kms_to_sdn_api.yaml`](openapi/kms_to_sdn_api.yaml) | [![SDN server pdf doc](https://img.shields.io/badge/SDN%20server-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf)| [![SDN server web page doc](https://img.shields.io/badge/SDN%20server-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/kms-to-sdn-api.html) |
+
 
 # 1. Overview
 
