@@ -26,7 +26,6 @@ This table gives quick links to the API descriptions:
 | KMS Server API |[`sdn_to_kms_api.yaml`](openapi/sdn_to_kms_api.yaml)| [![KMS server pdf doc](https://img.shields.io/badge/KMS%20server-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf) | [![KMS server web page doc](https://img.shields.io/badge/KMS%20server-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/sdn-to-kms-api.html)|
 | SDN Server API | [`kms_to_sdn_api.yaml`](openapi/kms_to_sdn_api.yaml) | [![SDN server pdf doc](https://img.shields.io/badge/SDN%20server-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf)| [![SDN server web page doc](https://img.shields.io/badge/SDN%20server-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/kms-to-sdn-api.html) |
 
-
 # 1. Overview
 
 ![SDN Managed QKDN](doc/figures/ETSI_015_SDN_Network.png)
