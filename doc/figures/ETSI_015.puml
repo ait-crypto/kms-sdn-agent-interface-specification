@@ -23,7 +23,7 @@ rectangle "SD-QKD Node A" as qkd_node_big{
 }
 rectangle "SD-QKD Node D" as qkd_node_big_D{
     component "SDN-Agent" as sdn_agent_d <<sdna>>
-    component "App(destination)" as app_d <<app>>
+    component "App (destination)" as app_d <<app>>
     collections "QKD Modules" as qkd_modules_d
     component "KMS" as kms_d <<kms>>
 }
