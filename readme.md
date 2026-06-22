@@ -5,9 +5,6 @@ QUICKS: QKDN Universal Interface for Communication between KMS and SDN<!-- omit 
 
 [![GitHub release](https://img.shields.io/github/v/release/ait-crypto/kms-sdn-agent-interface-specification)](https://github.com/ait-crypto/kms-sdn-agent-interface-specification/releases)
 
-[![KMS server pdf doc](https://img.shields.io/badge/KMS%20server%20API-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf) [![SDN server pdf doc](https://img.shields.io/badge/SDN%20server%20API-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf)
-[![KMS server web page doc](https://img.shields.io/badge/KMS%20server%20API-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/sdn-to-kms-api.html) [![SDN server web page doc](https://img.shields.io/badge/SDN%20server%20API-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/kms-to-sdn-api.html)
-
 - [1. Overview](#1-overview)
 - [2. API outline](#2-api-outline)
 - [3. Notes](#3-notes)
@@ -22,6 +19,13 @@ QUICKS: QKDN Universal Interface for Communication between KMS and SDN<!-- omit 
 
 This repository hosts and maintains the API description developed by AIT for an interface between a Key Management System (KMS) and a Software Defined Network (SDN) Agent for Quantum Key Distribution Networks (QKDN).
 
+This table gives quick links to the API descriptions:
+
+|API | OpenAPI file |PDF view | Web view |
+|----|--------------|---------|----------|
+| KMS Server API |[`sdn_to_kms_api.yaml`](openapi/sdn_to_kms_api.yaml)| [![KMS server pdf doc](https://img.shields.io/badge/KMS%20server-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf) | [![KMS server web page doc](https://img.shields.io/badge/KMS%20server-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/sdn-to-kms-api.html)|
+| SDN Server API | [`kms_to_sdn_api.yaml`](openapi/kms_to_sdn_api.yaml) | [![SDN server pdf doc](https://img.shields.io/badge/SDN%20server-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf)| [![SDN server web page doc](https://img.shields.io/badge/SDN%20server-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/kms-to-sdn-api.html) |
+
 # 1. Overview
 
 ![SDN Managed QKDN](doc/figures/ETSI_015_SDN_Network.png)
@@ -32,7 +36,7 @@ a) KMS to Application Interface, typically ETSI GS QKD [014](https://www.etsi.or
 
 b) KMS to QKD interface, typically ETSI GS QKD [014](https://www.etsi.org/deliver/etsi_gs/QKD/001_099/014/01.01.01_60/gs_qkd014v010101p.pdf) or [004](https://www.etsi.org/deliver/etsi_gs/QKD/001_099/004/02.01.01_60/gs_qkd004v020101p.pdf).
 
-c) KMS to SDN Agent interface.
+c) **KMS to SDN Agent interface. → QUICKS**
 
 d) SDN Agent to QKD interface, typically ETSI GS QKD [023 (draft)](https://portal.etsi.org/webapp/WorkProgram/Report_WorkItem.asp?WKI_ID=69537).
 
@@ -55,7 +59,7 @@ You can find the openAPI descriptions at:
 - [`openapi/kms_to_sdn_api.yaml`](openapi/kms_to_sdn_api.yaml) for the API, where the SDN Agent hosts the server and the KMS initiates client requests.
 - [`openapi/sdn_to_kms_api.yaml`](openapi/sdn_to_kms_api.yaml) for the API, where the KMS hosts the server and the SDN Agent initiates client requests.
 
-You can find static renders (html or pdf) of this API, see [3.2. How to use OpenAPI specification format](#32-how-to-use-openapi-specification-format).
+You can find static renders (html or pdf) of this API either in the table on top or see [3.2. How to use OpenAPI specification format](#32-how-to-use-openapi-specification-format).
 
 > [!IMPORTANT]
 > **Sequence diagrams and API details can be found in [`doc/readme.md`](doc/).**
