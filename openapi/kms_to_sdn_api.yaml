@@ -87,10 +87,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  source_KME_ID:
+                  source_kms_id:
                     type: string
                     description: Source KMS ID, most likely the one which received the query.
-                  target_KME_ID:
+                  target_kms_id:
                     type: string
                     description: Remote peer KMS id.
                   key_size:
@@ -117,7 +117,7 @@ paths:
                     type: integer
                     minimum: 0
                     description: Minimum key size in bit, which can be handled. This is determined by the biggest number given by KMS instances in the path.
-                  max_SAE_ID_count:
+                  max_sae_id_count:
                     type: integer
                     minimum: 0
                     description: Stating if group keys are supported and if so with how many additional participants. 0 means no additional SAE IDs. This is determined by the smallest number given by the specified source and destination KMS instances.
@@ -125,15 +125,15 @@ paths:
                     type: object
                     description: any additional information. Aggregated and relayed from the instances.
                 required:
-                  - source_KME_ID
-                  - target_KME_ID
+                  - source_kms_id
+                  - target_kms_id
                   - key_size
                   - stored_key_count
                   - max_key_count
                   - max_key_per_request
                   - max_key_size
                   - min_key_size
-                  - max_SAE_ID_count
+                  - max_sae_id_count
         "400":
           description: Bad request
           content:
@@ -366,7 +366,7 @@ paths:
                     - device_vendor
                     - device_model
                     - device_version
-                qkd_device_ids:
+                device_ids:
                   description: If known connected QKD devices
                   type: array
                   items:
