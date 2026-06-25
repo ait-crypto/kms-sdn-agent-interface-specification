@@ -17,6 +17,13 @@ QUICKS Specification details<!-- omit in toc -->
   - [3.3. Deadlock-aware implementation](#33-deadlock-aware-implementation)
     - [3.3.1. Multithread / async patterns](#331-multithread--async-patterns)
     - [3.3.2. Timeout](#332-timeout)
+  - [3.4. Explanation of IDs](#34-explanation-of-ids)
+    - [3.4.1. application\_id](#341-application_id)
+    - [3.4.2. kms\_id](#342-kms_id)
+    - [3.4.3. device\_id](#343-device_id)
+    - [3.4.4. link\_id](#344-link_id)
+    - [3.4.5. key\_stream\_id](#345-key_stream_id)
+    - [3.4.6. key\_id](#346-key_id)
 
 # 1. Introduction
 
@@ -160,3 +167,39 @@ Implement the server and client in different threads This way the client can wai
 Using different timeout behavior is a simple solution. Non-essential messages for which error handling can be easily implemented should have a lower timeout, so for example:
 
 ![timeout problem outline](./figures/sequence_deadlock_example_solve_timeout.png)
+
+## 3.4. Explanation of IDs
+
+Several different IDs are used to identify either components, data or data structures. They are briefly defined and explained in this section.
+
+![ID overview](./figures/high_level_ID_overview.png)
+
+### 3.4.1. application_id
+
+The `application_id`, also referred to as `app_id`, `master_sae_id` or `slave_sae_id`, identifies the entity which uses the key provided by the QKD Network. As the primary use-case is symmetric cryptography, the applications usually act in pairs, where the other side of the pair is referred to as "peer application".
+
+### 3.4.2. kms_id
+
+The `kms_id`, also referred to as `kme_id` in ETSI 014, identifies one instance of the key management layer on a QKD node. This instance implements the key management and key distribution functionality.
+
+### 3.4.3. device_id
+
+The `device_id` identifies one instance of the QKD layer, which is involved in a QKD protocol.
+
+### 3.4.4. link_id
+
+The `link_id` identifies an edge in the QKD network graph, where at the vertices a key pair is generated using a QKD protocol.
+
+Oftentimes the `link_id` correlates with the quantum channel or QKD device deployment, but that is explicitly not the definition. The `link_id` is independent of device specifics or the physical layer, as the following examples show:
+
+- For QKD devices or protocols, which have non-key producing components (e.g. in entanglement based QKD, with a middle device) the `link_id` only refers to the endpoints, which produce keying material. As a result in this example, devices involved in a QKD protocol can have no associated `link_id`.
+- For QKD network configurations where devices can establish multiple connections, e.g. in a switched network or multiple endpoints in entanglement QKD, each connection gets its own `link_id` as long as they can generate key pairs. As a result in this example, a device can be part of multiple different `link_id`s.
+- For deployments, where multiple different devices can generate key pairs at the same two nodes, only one `link_id` is given, for example in redundant parallel deployments. As a result in this example, a `link_id` can be associated with multiple QKD devices.
+
+### 3.4.5. key_stream_id
+
+The `key_stream_id`, also referred to as `ks_id` references the relay path used to establish end-to-end keys in the KMS. It also refers to a group of individual keys (which are referenced by the `key_id`) in the KMS storage. This can be a data stream or several segregated database entries, which all were established via the same set of links in a key relay process.
+
+### 3.4.6. key_id
+
+The `key_id` is not used in this specification, but refers to a single key value.
