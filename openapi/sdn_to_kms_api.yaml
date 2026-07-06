@@ -90,7 +90,7 @@ paths:
                   etsi_014_info:
                     type: object
                     properties:
-                      KME_ID: 
+                      kms_id: 
                         type: string
                         description: This KMS instance ID
                       key_size:
@@ -117,7 +117,7 @@ paths:
                         type: integer
                         minimum: 0
                         description: Number in bit stating the smallest key size this KMS can handle.
-                      max_SAE_ID_count:
+                      max_sae_id_count:
                         type: integer
                         minimum: 0
                         description: Number stating if this KMS supports group keys and if so with how many participants. 0 means no group keys, 1 is one additional slave SAE etc.
@@ -125,15 +125,14 @@ paths:
                         type: object
                         description: Any additional information. It is aggregated from all KMS instances in the SDN Controller.
                     required:
-                      - source_KME_ID
-                      - target_KME_ID
+                      - kms_id
                       - key_size
                       - stored_key_count
                       - max_key_count
                       - max_key_per_request
                       - max_key_size
                       - min_key_size
-                      - max_SAE_ID_count
+                      - max_sae_id_count
                 required:
                   - key_relay_support
                   - app_api_support
