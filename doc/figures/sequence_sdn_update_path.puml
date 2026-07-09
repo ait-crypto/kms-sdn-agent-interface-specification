@@ -1,6 +1,7 @@
 @startuml
 !include  ./style.pu
 autonumber
+hide stereotype
 
 skinparam dpi 300
 
@@ -8,28 +9,28 @@ skinparam dpi 300
 
 title: SDN path update ETSI GS QKD 004
 
-participant "SDN Controller" as SDN_Controller
+participant "SDN Controller" as SDN_Controller <<sdnc>>
 
 box "Node A" #WhiteSmoke
-participant "SDN Agent A" as SDN_A
-participant "App A" as App_A
-participant "KMS A" as KMS_A
+participant "SDN Agent A" as SDN_A <<sdna>>
+participant "App A" as App_A <<app>>
+participant "KMS A" as KMS_A <<kms>>
 end box
 
 box "Node B" #WhiteSmoke
-participant "SDN Agent B" as SDN_B
-participant "KMS B" as KMS_B
+participant "SDN Agent B" as SDN_B <<sdna>>
+participant "KMS B" as KMS_B <<kms>>
 end box
 
 box "Node C" #WhiteSmoke
-participant "SDN Agent C" as SDN_C
-participant "KMS C" as KMS_C
+participant "SDN Agent C" as SDN_C <<sdna>>
+participant "KMS C" as KMS_C <<kms>>
 end box
 
 box "Node D" #WhiteSmoke
-participant "SDN Agent D" as SDN_D
-participant "App D" as App_D
-participant "KMS D" as KMS_D
+participant "SDN Agent D" as SDN_D <<sdna>>
+participant "App D" as App_D <<app>>
+participant "KMS D" as KMS_D <<kms>>
 end box
 
 == Normal operation ==

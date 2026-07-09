@@ -1,0 +1,84 @@
+@startuml
+!include  ./style.pu
+skinparam componentStyle rectangle
+hide stereotype
+'skinparam linetype polyline
+'skinparam linetype ortho
+
+skinparam dpi 300
+
+allow_mixing
+
+component "QKD Node A" as qkd_node_big{
+    rectangle "SDN Agent" as sdn_agent <<sdna>>
+
+    rectangle "App" as app_src <<app>>
+    note right<<app>>APP_COLOR
+    ETSI 014: ""master_sae_id"" or ""slave_sae_id""
+    ETSI 004: ""URI"" of the application
+    end note
+    rectangle "App 2" as app2  <<app>>
+
+    collections "QKD Modules" as qkd_modules
+    note right
+    device_id
+    end note
+
+    map "KMS" as kms <<kms>>{
+        **key_stream_id** 1 => **<color:#darkviolet>10011**<color:#black>011
+        **key_stream_id** 2 => 01110
+    }
+    note right<<kms>>KMS_COLOR
+    kms_id
+    end note
+}    
+rectangle "SDN Conroller" as sdn_controller <<sdnc>>
+rectangle "App" as app_dst <<app>>
+note right<<app>>APP_COLOR
+sometimes referred to as peer application
+end note
+
+rectangle "QKD Node B" as qkd_node_b
+rectangle "QKD Node C" as qkd_node_c
+rectangle "QKD Node D" as qkd_node_d
+rectangle "QKD Node E" as qkd_node_e
+
+app_src -down- kms #text:darkviolet : <&key*1.5>**key_id(KS_ID_1)**
+app2 -down-kms : <&key*1.5>**key_id(KS_ID_2)**
+qkd_node_e -down- app_dst #text:darkviolet : <&key*1.5>**key_id**
+kms -down- qkd_modules
+sdn_agent - kms
+sdn_agent -down- qkd_modules
+sdn_controller .down. sdn_agent
+
+sdn_controller .down. qkd_node_b
+sdn_controller .down.. qkd_node_c
+sdn_controller .down. qkd_node_d
+sdn_controller .down.. qkd_node_e
+
+qkd_modules -up[bold,#CornflowerBlue] qkd_node_b #text:CornflowerBlue : ""**link_id**""
+qkd_node_b -down[bold,#Navy]- qkd_node_c #text:Navy : ""**link_id**""
+qkd_node_c -left[bold,KMS_COLOR]- qkd_modules : ""**key_stream_id**""
+qkd_node_d -right[bold]- qkd_node_b
+qkd_node_d -[bold]- qkd_node_c
+qkd_node_e -up[bold]- qkd_node_d
+qkd_node_e -[bold,KMS_COLOR]right- qkd_node_c : ""**key_stream_id**""
+
+'hidden
+'qkd_modules -[hidden] quantum_channel: q
+'app_dst -[hidden]right- sdn_controller
+'qkd_node_c -right[hidden]- quantum_channel: XXXX
+'quantum_channel -left[hidden]- quantum_channel: X
+
+skinparam LegendBackgroundColor #White
+legend
+
+| **ID** | **Explanation** |
+| <APP_COLOR><color:white>**application_id** | ID to identify an application. Multiple applications can be on a node.|
+| <KMS_COLOR><color:white>**kms_id** | ID to identify a KMS instance.|
+| **device_id** | ID to identify a QKD module.|
+| <#CornflowerBlue><color:white>**link_id** | ID to identify a link. |
+| <KMS_COLOR><color:white>**key_stream_id** | ID to identify a key stream.|
+| <#darkviolet><color:white>**key_id** | ID to identify a delivered key. Subset of a key stream. |
+endlegend
+@enduml

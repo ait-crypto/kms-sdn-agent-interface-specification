@@ -5,8 +5,6 @@ QUICKS: QKDN Universal Interface for Communication between KMS and SDN<!-- omit 
 
 [![GitHub release](https://img.shields.io/github/v/release/ait-crypto/kms-sdn-agent-interface-specification)](https://github.com/ait-crypto/kms-sdn-agent-interface-specification/releases)
 
-[![KMS server pdf doc](https://img.shields.io/badge/KMS%20server%20API-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf) [![SDN server pdf doc](https://img.shields.io/badge/SDN%20server%20API-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf) [![KMS server web page doc](https://img.shields.io/badge/KMS%20server%20API-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/sdn-to-kms-api.html) [![SDN server web page doc](https://img.shields.io/badge/SDN%20server%20API-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/kms-to-sdn-api.html)
-
 - [1. Overview](#1-overview)
 - [2. API outline](#2-api-outline)
 - [3. Notes](#3-notes)
@@ -15,14 +13,18 @@ QUICKS: QKDN Universal Interface for Communication between KMS and SDN<!-- omit 
   - [3.3. Security](#33-security)
   - [3.4. ETSI GS QKD 015 compatibility](#34-etsi-gs-qkd-015-compatibility)
   - [3.5. Vendor specifics support](#35-vendor-specifics-support)
-  - [3.6. Deadlock-aware implementation](#36-deadlock-aware-implementation)
-    - [3.6.1. Multithread / async patterns](#361-multithread--async-patterns)
-    - [3.6.2. Timeout](#362-timeout)
-  - [3.7. Error codes](#37-error-codes)
-  - [3.8. Related publications](#38-related-publications)
+  - [3.6. Error codes](#36-error-codes)
+  - [3.7. Related publications](#37-related-publications)
 - [4. Acknowledgements](#4-acknowledgements)
 
 This repository hosts and maintains the API description developed by AIT for an interface between a Key Management System (KMS) and a Software Defined Network (SDN) Agent for Quantum Key Distribution Networks (QKDN).
+
+This table gives quick links to the API descriptions:
+
+|API | OpenAPI file |PDF view | Web view |
+|----|--------------|---------|----------|
+| KMS Server API |[`sdn_to_kms_api.yaml`](openapi/sdn_to_kms_api.yaml)| [![KMS server pdf doc](https://img.shields.io/badge/KMS%20server-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf) | [![KMS server web page doc](https://img.shields.io/badge/KMS%20server-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/sdn-to-kms-api.html)|
+| SDN Server API | [`kms_to_sdn_api.yaml`](openapi/kms_to_sdn_api.yaml) | [![SDN server pdf doc](https://img.shields.io/badge/SDN%20server-PDF%20doc-red?style=for-the-badge&logo=googledocs&logoColor=white)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf)| [![SDN server web page doc](https://img.shields.io/badge/SDN%20server-Web%20doc-0366d6?style=for-the-badge&logo=github)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/html/kms-to-sdn-api.html) |
 
 # 1. Overview
 
@@ -34,7 +36,7 @@ a) KMS to Application Interface, typically ETSI GS QKD [014](https://www.etsi.or
 
 b) KMS to QKD interface, typically ETSI GS QKD [014](https://www.etsi.org/deliver/etsi_gs/QKD/001_099/014/01.01.01_60/gs_qkd014v010101p.pdf) or [004](https://www.etsi.org/deliver/etsi_gs/QKD/001_099/004/02.01.01_60/gs_qkd004v020101p.pdf).
 
-c) KMS to SDN Agent interface.
+c) **KMS to SDN Agent interface. → QUICKS**
 
 d) SDN Agent to QKD interface, typically ETSI GS QKD [023 (draft)](https://portal.etsi.org/webapp/WorkProgram/Report_WorkItem.asp?WKI_ID=69537).
 
@@ -57,9 +59,10 @@ You can find the openAPI descriptions at:
 - [`openapi/kms_to_sdn_api.yaml`](openapi/kms_to_sdn_api.yaml) for the API, where the SDN Agent hosts the server and the KMS initiates client requests.
 - [`openapi/sdn_to_kms_api.yaml`](openapi/sdn_to_kms_api.yaml) for the API, where the KMS hosts the server and the SDN Agent initiates client requests.
 
-You can find static renders (html or pdf) of this API, see [3.2. How to use OpenAPI specification format](#32-how-to-use-openapi-specification-format).
+You can find static renders (html or pdf) of this API either in the table on top or see [3.2. How to use OpenAPI specification format](#32-how-to-use-openapi-specification-format).
 
-Sequences and further information can be found in [`doc/readme.md`](doc/). Refer to the Note on [How to use OpenAPI specification format](#32-how-to-use-openapi-specification-format).
+> [!IMPORTANT]
+> **Sequence diagrams and API details can be found in [`doc/readme.md`](doc/).**
 
 # 3. Notes
 
@@ -92,7 +95,7 @@ The PDF is generated with [rapipdf-cli by kingjan1999](https://github.com/kingja
 - PDF of the [KMS API (main)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/sdn_to_kms_api.pdf)
 - PDF of the [SDN API (main)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/pdf/kms_to_sdn_api.pdf)
 - PDF of the [KMS API (development)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/development/pdf/sdn_to_kms_api.pdf)
-- PDF of the [SDN API (development)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/main/development/kms_to_sdn_api.pdf)
+- PDF of the [SDN API (development)](https://ait-crypto.github.io/kms-sdn-agent-interface-specification/development/kms_to_sdn_api.pdf)
 
 Any other branch can be viewed by adapting the URL, provided it triggered the corresponding GitHub action: `https://ait-crypto.github.io/kms-sdn-agent-interface-specification/<branch-name>/pdf/sdn_to_kms_api.pdf` and `https://ait-crypto.github.io/kms-sdn-agent-interface-specification/<branch-name>/pdf/kms_to_sdn_api.pdf`. If the `<branch_name>` contains the `/` character, it has to be replaced by a `-` character.
 
@@ -115,33 +118,15 @@ Such examples are:
 - Reported error codes and messages: it is not feasible for a specification to note all internal errors a KMS implementation can or wants to publish.
 - Zero-touch provisioning config: since each KMS has a unique feature set and may also not support remote configuration, the config file (which can be given as a response to the KMS registration message) is not defined. As soon as a KMS registers to the SDN, a plugin in the Controller should generate the vendor-specific configuration.
 
-## 3.6. Deadlock-aware implementation
-
-As both communication partners, the KMS and SDN Agent, are a server and a client, it is important to implement those in a way to avoid deadlocks. The following figure outlines a deadlock situation, where at the same time the KMS is a client to the SDN Agent and vice versa.
-
-![deadlock_issue](./doc/figures/sequence_deadlock_example.png)
-
-This is an issue which can usually be solved with different implementation techniques, some of which are outlined here. But to emphasize, this is beyond the API specification, but on the implementation of the KMS or SDN Agent. The following notes are meant as high-level suggestions.
-
-### 3.6.1. Multithread / async patterns
-
-Implement the server and client in different threads This way the client can wait in its thread for the response, while the request at its server can be handled separately.
-
-### 3.6.2. Timeout
-
-Using different timeout behavior is a simple solution. Non-essential messages for which error handling can be easily implemented should have a lower timeout, so for example:
-
-![timeout problem outline](doc/figures/sequence_deadlock_example_solve_timeout.png)
-
-## 3.7. Error codes
+## 3.6. Error codes
 
 Some http error codes are defined in the OpenAPI description. However, all http error codes are acceptable as defined in [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#name-status-codes). The content of the response it also outlined in some cases and follows [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html), but mostly limits itself to the `type`, `title`, `status` and `detail` field. Any error codes should follow that pattern. Specifically any feature foreseen in this API but not supported by the KMS or SDN Agent implementation should use the 501 error code. `404 Not Found` responses typically do not require a response body. Such responses may be generated by the web server or HTTP framework when the requested resource or endpoint is not available, and may not support producing a structured error representation.
 
-## 3.8. Related publications
+## 3.7. Related publications
 
 This repository complements research presented in the following publications:
 
-- Stephan Laschet, Gergely Lendvay, Thomas Lorünser, Paul James, Luca Torresetti and Alessandro Colombo, Software Defined Networks and Key Relay for Large-Scale Quantum Key Distribution Networks
+- S. Laschet, G. Lendvay, T. Lorünser, P. James, L. Torresetti and A. Colombo, "Software Defined Networks Key Relay for Large-Scale Quantum Key Distribution Networks," 2026 International Conference on Quantum Communications, Networking, and Computing (QCNC), Kobe, Japan, 2026, pp. 715-719, doi: [10.1109/QCNC69040.2026.00115](https://doi.org/10.1109/QCNC69040.2026.00115).
 - James, P, Laschet, S, Ramacher, S & Torresetti, L 2023, Key Management Systems for Large-Scale Quantum Key Distribution Networks. in ARES '23: Proceedings of the 18th International Conference on Availability, Reliability and Security., 126, ACM International Conference Proceeding Series, S. 1-9, ARES 2023: The 18th International Conference on Availability, Reliability and Security, Benevento, Italy, 29/08/23. [https://doi.org/10.1145/3600160.3605050](https://doi.org/10.1145/3600160.3605050).
 - Brito, JP, Ballesta, J, Brito-Mendez, R, Mengual, L, Ortíz, L, Martin, V, Cantó, R, Muñiz, A, Pastor, A, Lopez, D, Laschet, S, Ramacher, S, Piscione, P, Abdulwahed, AK, Giardina, P, Freitas, M, Calé, R, Maia, L, Magalhães, L, Anjos, G, Chaves, R, Afonso, J, Martins, P, Dias, T, Pinto, F, Vieira, M, Bacar, R & Bastos, C 2025, Secure Network Innovation in Defense: SDN and Quantum Cryptography with DISCRETION. in 2025 International Conference on Quantum Communications, Networking, and Computing (QCNC). S. 261 - 268, International Conference on Quantum Communications, Networking, and Computing (QCNC 2025), Nara, Japan, 31/03/25. [https://doi.org/10.1109/QCNC64685.2025.00049](https://doi.org/10.1109/QCNC64685.2025.00049).
 - Valbusa, F, Lorünser, T, Spini, G & Laschet, S 2025, Relaxing the Single Point of Failure in Quantum Key Distribution Networks: An Overview of Multi-path Approaches. in F Skopik, V Naessens & B De Sutter (Hrsg.), Availability, Reliability and Security: ARES 2025 EU Projects Symposium Workshops, Ghent, Belgium, August 11–14, 2025, Proceedings, Part I. Bd. 15998, Lecture Notes in Computer Science, Bd. 15998, Springer, S. 183–200, ARES 2025 EU Projects Symposium Workshops, Ghent, Belgium, 11/08/25. [https://doi.org/10.1007/978-3-032-00642-4_11](https://doi.org/10.1007/978-3-032-00642-4_11).

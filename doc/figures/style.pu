@@ -1,4 +1,4 @@
-' Not-ugly plantuml style defaults
+' style defaults
 
 skinparam defaultFontName  Helvetica
 skinparam sequenceMessageAlign center
@@ -48,7 +48,6 @@ skinparam class {
 	BorderColor Black
 	BorderThickness 1
 }
-
 
 skinparam object {
 	ArrowColor Black
@@ -100,5 +99,54 @@ skinparam map {
 }
 
 skinparam rectangle {
-    BackgroundColor white
+	BackgroundColor white
 }
+
+' Colors
+
+!define KMS_COLOR #31b7bc
+!define APP_COLOR #79151d
+!define SDN_AGENT_COLOR #470f51
+!define SDN_CONTROLLER_COLOR #707f87
+
+
+<style>
+.kms {
+	BackGroundColor KMS_COLOR;
+	FontColor white;
+	FontStyle bold;
+	activationBox {
+		BackGroundColor white;
+		LineColor KMS_COLOR;
+	}
+}
+.app {
+	BackGroundColor APP_COLOR;
+	FontColor white;
+	FontStyle bold;
+	activationBox {
+		BackGroundColor white;
+		LineColor APP_COLOR;
+	}
+}
+.sdna {
+	BackGroundColor SDN_AGENT_COLOR;
+	FontColor white;
+	FontStyle bold;
+	activationBox {
+		BackGroundColor white;
+		LineColor SDN_AGENT_COLOR;
+	}
+}
+.sdnc {
+	BackGroundColor SDN_CONTROLLER_COLOR;
+	FontColor white;
+	FontStyle bold;
+	activationBox {
+		BackGroundColor white;
+		LineColor SDN_CONTROLLER_COLOR;
+	}
+}
+
+</style>
+

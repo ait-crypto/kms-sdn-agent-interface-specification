@@ -13,6 +13,17 @@ QUICKS Specification details<!-- omit in toc -->
     - [3.1.1. Note 1, URI authority type](#311-note-1-uri-authority-type)
     - [3.1.2. Note 2, list type](#312-note-2-list-type)
     - [3.1.3. Note 3: Entry order](#313-note-3-entry-order)
+  - [3.2. peer\_application\_info](#32-peer_application_info)
+  - [3.3. Deadlock-aware implementation](#33-deadlock-aware-implementation)
+    - [3.3.1. Multithread / async patterns](#331-multithread--async-patterns)
+    - [3.3.2. Timeout](#332-timeout)
+  - [3.4. Explanation of IDs](#34-explanation-of-ids)
+    - [3.4.1. application\_id](#341-application_id)
+    - [3.4.2. kms\_id](#342-kms_id)
+    - [3.4.3. device\_id](#343-device_id)
+    - [3.4.4. link\_id](#344-link_id)
+    - [3.4.5. key\_stream\_id](#345-key_stream_id)
+    - [3.4.6. key\_id](#346-key_id)
 
 # 1. Introduction
 
@@ -34,7 +45,7 @@ As an application either opens a key stream via the ETSI GS QKD 004 `open_connec
 - The SDN Agents on the relay path configure the path with the next node infos to their corresponding KMS instances (msg 7, 9)
 - The original source KMS message, after successful establishment of the relay path, is answered by the SDN Controller to the SDN Agent (msg 10) and in turn to the source KMS (msg 11)
 - If the request was an `open_connect` via the ETSI GS QKD 004 interface, it is answered (msg 12) and as soon as the destination application requests the same key stream to be opened (msg 13, 14) the KMS notifies the SDN Agent of this link update (msg 15).
-- If the request was an `enc_keys` via the ETSI GS QKD 014 interface, first the keys have to be established using the link (msg 18, 19, 20) and upon success the request can be answered (msg 21). Then the destination App (msg 22) requests the same keys via the `dec_keys` endpoint (msg 23). The KMS informs the SDN agent of this link update (msg 24) and delivers the keys (msg 26)
+- If the request was an `enc_keys` via the ETSI GS QKD 014 interface, first the keys have to be established using the link (msg 18, 19, 20) and upon success the relay path is considered successfully closed, which is reported to the SDN Agent and in turn the SDN Controller (msg 21, 22). The `enc_keys` can now be safely answered (msg 23). The destination application can then obtain the same keys via `dec_keys` (msg 25, 26).
 
 ![sequence](figures/sequence_sdn_new_app.png)
 
@@ -48,7 +59,7 @@ In case of the ETSI GS QKD 014, each request by the application results in a new
 The KMS should request from the SDN paths which can also support any internal key consumption.
 
 **Note 4:**
-All communication beyond scope is only exemplary, specifically the communication between the SDN Controller and SDN Agent (messages 4, 6, 8, 10, 16, 25) is out of scope.
+All communication beyond scope is only exemplary, specifically the communication between the SDN Controller and SDN Agent (messages 4, 6, 8, 10, 16, 22) is out of scope.
 
 ## 2.2. Link update (ETSI 004 use-case)
 
@@ -134,3 +145,61 @@ For example in the setup depicted above, if the "destination relay" method is us
 Therefore, in case of more than two elements, the first entry is designated as the primary one, with whom the others are to be combined.
 
 The destination array for multi path must correspond accordingly for the "destination relay" method.
+
+## 3.2. peer_application_info
+
+Some messages have the additional field `peer_application_info` this is required for group key applications supported by ETSI GS QKD 014. Specifically for the case where the peer applications are spread across multiple nodes. See also [Issue description](https://github.com/ait-crypto/kms-sdn-agent-interface-specification/issues/57).
+
+## 3.3. Deadlock-aware implementation
+
+As both communication partners, the KMS and SDN Agent, are a server and a client, it is important to implement those in a way to avoid deadlocks. The following figure outlines a deadlock situation, where at the same time the KMS is a client to the SDN Agent and vice versa.
+
+![deadlock_issue](./figures/sequence_deadlock_example.png)
+
+This is an issue which can usually be solved with different implementation techniques, some of which are outlined here. But to emphasize, this is beyond the API specification, but on the implementation of the KMS or SDN Agent. The following notes are meant as high-level suggestions.
+
+### 3.3.1. Multithread / async patterns
+
+Implement the server and client in different threads This way the client can wait in its thread for the response, while the request at its server can be handled separately.
+
+### 3.3.2. Timeout
+
+Using different timeout behavior is a simple solution. Non-essential messages for which error handling can be easily implemented should have a lower timeout, so for example:
+
+![timeout problem outline](./figures/sequence_deadlock_example_solve_timeout.png)
+
+## 3.4. Explanation of IDs
+
+Several different IDs are used to identify either components, data or data structures. They are briefly defined and explained in this section.
+
+![ID overview](./figures/high_level_ID_overview.png)
+
+### 3.4.1. application_id
+
+The `application_id`, also referred to as `app_id`, `master_sae_id` or `slave_sae_id`, identifies the entity which uses the key provided by the QKD Network. As the primary use-case is symmetric cryptography, the applications usually act in pairs, where the other side of the pair is referred to as "peer application".
+
+### 3.4.2. kms_id
+
+The `kms_id`, also referred to as `kme_id` in ETSI 014, identifies one instance of the key management layer on a QKD node. This instance implements the key management and key distribution functionality.
+
+### 3.4.3. device_id
+
+The `device_id` identifies one instance of the QKD layer, which is involved in a QKD protocol.
+
+### 3.4.4. link_id
+
+The `link_id` identifies an edge in the QKD network graph, where at the vertices a key pair is generated using a QKD protocol.
+
+Oftentimes the `link_id` correlates with the quantum channel or QKD device deployment, but that is explicitly not the definition. The `link_id` is independent of device specifics or the physical layer, as the following examples show:
+
+- For QKD devices or protocols, which have non-key producing components (e.g. in entanglement based QKD, with a middle device) the `link_id` only refers to the endpoints, which produce keying material. As a result in this example, devices involved in a QKD protocol can have no associated `link_id`.
+- For QKD network configurations where devices can establish multiple connections, e.g. in a switched network or multiple endpoints in entanglement QKD, each connection gets its own `link_id` as long as they can generate key pairs. As a result in this example, a device can be part of multiple different `link_id`s.
+- For deployments, where multiple different devices can generate key pairs at the same two nodes, only one `link_id` is given, for example in redundant parallel deployments. As a result in this example, a `link_id` can be associated with multiple QKD devices.
+
+### 3.4.5. key_stream_id
+
+The `key_stream_id`, also referred to as `ks_id` references the relay path used to establish end-to-end keys in the KMS. It also refers to a group of individual keys (which are referenced by the `key_id`) in the KMS storage. This can be a data stream or several segregated database entries, which all were established via the same set of links in a key relay process.
+
+### 3.4.6. key_id
+
+The `key_id` is not used in this specification, but refers to a single key value.
