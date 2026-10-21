@@ -255,7 +255,7 @@ paths:
       tags:
         - Link
       summary: Update link status by destination APP
-      description: When the registered application at POST had keys successfully established, the POST is sent by the destination KMS. This indicates, that the path was closed.
+      description: When the registered application at POST had keys successfully established, the PATCH is sent by the destination KMS. This indicates, that the path was closed.
       operationId: patch_link_registration
       requestBody:
         required: true
