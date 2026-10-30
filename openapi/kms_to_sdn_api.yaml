@@ -2,7 +2,7 @@ openapi: 3.1.2
 info:
   title: KMS to SDN Agent API - SDN server
   description: Messages the KMS sends to the SDN
-  version: 2.2.0
+  version: 2.2.1
   contact:
     url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
   x-logo:
