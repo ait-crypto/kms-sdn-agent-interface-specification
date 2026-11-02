@@ -421,7 +421,9 @@ paths:
               properties:
                 state:
                   type: string
-                  example: "stopped"
+                  enum: ["online", "stopped", "offline"]
+                  example: "online"
+                  description: State of the KMS. "online" if operational, stopped if running but not operational, offline if not operational. Stopped is a state, where the KMS is running but not operational, which could for example be a maintenance state or similar.
                 reason:
                   type: string
                   example: "maintenance"
