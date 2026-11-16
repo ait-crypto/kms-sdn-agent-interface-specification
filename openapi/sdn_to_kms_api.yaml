@@ -344,7 +344,7 @@ paths:
         "500":
           description: QKD devices information could not be returned because of a server-side error
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/error-response"
 
@@ -417,19 +417,19 @@ paths:
         "400":
           description: Invalid input (missing fields or malformed body)
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/error-response"
         "409":
           description: Device already exists (conflict on device_id)
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/error-response"
         "500":
           description: Server-side error while creating the device
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/error-response"
 
@@ -459,7 +459,7 @@ paths:
         "400":
           description: Invalid input (missing device_id or malformed update object)
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/error-response"
         "404":
@@ -467,7 +467,7 @@ paths:
         "500":
           description: Server-side error while updating the device
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/error-response"
     delete:
