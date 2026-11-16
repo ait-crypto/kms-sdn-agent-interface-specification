@@ -2,7 +2,7 @@ openapi: 3.1.2
 info:
   title: KMS to SDN Agent API - SDN server
   description: Messages the KMS sends to the SDN
-  version: 2.2.0
+  version: 2.2.1
   contact:
     url: https://github.com/ait-crypto/kms-sdn-agent-interface-specification/discussions
   x-logo:
@@ -255,7 +255,7 @@ paths:
       tags:
         - Link
       summary: Update link status by destination APP
-      description: When the registered application at POST had keys successfully established, the POST is sent by the destination KMS. This indicates, that the path was closed.
+      description: When the registered application at POST had keys successfully established, the PATCH is sent by the destination KMS. This indicates, that the path was closed.
       operationId: patch_link_registration
       requestBody:
         required: true
@@ -421,7 +421,9 @@ paths:
               properties:
                 state:
                   type: string
-                  example: "stopped"
+                  enum: ["online", "stopped", "offline"]
+                  example: "online"
+                  description: State of the KMS. "online" if operational, stopped if running but not operational, offline if not operational. Stopped is a state, where the KMS is running but not operational, which could for example be a maintenance state or similar.
                 reason:
                   type: string
                   example: "maintenance"
